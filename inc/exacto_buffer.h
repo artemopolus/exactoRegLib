@@ -57,6 +57,7 @@ __static_inline void pshfrc_exbu8(ExactoBufferUint8Type * buffer,const uint8_t v
 {
     if(!buffer->isExist)     return;
     buffer->data[buffer->lst] = value;
+		if(buffer->isEmpty)	buffer->isEmpty = 0;
     buffer->lst = (buffer->lst + 1) & buffer->mask;
     if(buffer->lst == buffer->str) buffer->str = (buffer->str + 1) & buffer->mask;
 }
