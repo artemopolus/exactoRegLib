@@ -45,7 +45,7 @@ int checkSrvType(char * cmd, int cmdlen)
 
 uint8_t getDataCmd(char * cmd, uint8_t * trg, uint8_t * adr, uint8_t * value)
 {
-    if((cmd[0] == '[')&&((cmd[2] == 'w')||(cmd[2] == 'r'))&&(cmd[7] == ']'))
+    if(!((cmd[0] == '[')&&((cmd[2] == 'w')||(cmd[2] == 'r'))&&(cmd[7] == ']')))
     {
         return 0;
     }
