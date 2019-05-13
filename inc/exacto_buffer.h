@@ -58,20 +58,23 @@ __static_inline void pshfrc_exbu8(ExactoBufferUint8Type * buffer,const uint8_t v
     if(!buffer->isExist)     return;
     buffer->data[buffer->lst] = value;
 		if(buffer->isEmpty)	buffer->isEmpty = 0;
-    buffer->lst = (buffer->lst + 1) & buffer->mask;
-    if(buffer->lst == buffer->str) buffer->str = (buffer->str + 1) & buffer->mask;
+    else 
+		{
+			buffer->lst = (buffer->lst + 1) & buffer->mask;
+			if(buffer->lst == buffer->str) buffer->str = (buffer->str + 1) & buffer->mask;
+		}
 }
 __static_inline uint8_t grball_exbu8(ExactoBufferUint8Type * buffer, uint8_t * dst)
 {
     if(!buffer->isExist || buffer->isEmpty)     return 0;
-    uint8_t flag, value, i = 0;
-    flag = grbfst_exbu8(buffer, &value);
-    while(flag)
-    {
-        dst[i] = value;
-        flag = grbfst_exbu8(buffer, &value); 
-				i++;
-    }
+    uint8_t i = 0, adr = buffer->str;
+    do
+		{	
+			adr = (buffer->str + i) & buffer->mask;
+			dst[i] = buffer->data[adr];
+			i++;
+		}
+		while(adr != buffer->lst);
     return 1;
 }
 __static_inline uint8_t clrval_exbu8(ExactoBufferUint8Type * buffer)
