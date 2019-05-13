@@ -70,6 +70,7 @@ __static_inline uint8_t grball_exbu8(ExactoBufferUint8Type * buffer, uint8_t * d
     {
         dst[i] = value;
         flag = grbfst_exbu8(buffer, &value); 
+				i++;
     }
     return 1;
 }
