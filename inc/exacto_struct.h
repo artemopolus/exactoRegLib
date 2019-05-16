@@ -32,6 +32,12 @@ typedef enum{
 	ONLYLSM303_ESM = 1,
 	ALLRUNNING_ESM = 2
 }ExactoSensMode;
+
+#define	EXACTO_FREQ_100HZ  0x02U
+#define	EXACTO_FREQ_10HZ 	 0x01U
+#define	EXACTO_FREQ_1HZ 	 0x00U
+
+
 #define EXACTOLBIDATASIZE		36
 typedef struct{
     uint8_t lsm303[EXACTOLBIDATASIZE];
