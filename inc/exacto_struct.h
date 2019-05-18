@@ -24,7 +24,10 @@ typedef struct{
 
 typedef enum{
     READSENSMODE_ES32A = 0,
-    SENDFREQ_ES32A = 1
+    SENDFREQ_ES32A = 1,
+    SET_LSM303 = 2,
+    SET_BMP280 = 3,
+    SET_ISM330 = 4
 } ExactoStm32Adr;
 
 typedef enum{
