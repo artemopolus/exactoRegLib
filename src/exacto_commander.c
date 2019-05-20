@@ -74,10 +74,15 @@ uint8_t getDataCmd(char * cmd, uint8_t * trg, uint8_t * adr, uint8_t * value)
         return 0;
     else
         *value += val;
-    if(cmd[3] == 'r')
-        return 1;
-    else
-        return 2;
+    switch(cmd[2])
+    {
+        case 'r':
+            return 1;
+        case 'w':
+            return 2;
+        default:
+            return 0;
+    }
 }
 uint8_t charhex2int(char num)
 {
