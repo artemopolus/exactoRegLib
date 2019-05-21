@@ -25,11 +25,11 @@ void write_bmp280(uint8_t address, uint8_t value);
 
 
 
-void check_I2C_SB_bmp280(void);
-void check_I2C_ADDR_bmp280(void);
-void check_I2C_RXNE_bmp280(void);
+uint8_t check_I2C_SB_bmp280(void);
+uint8_t check_I2C_ADDR_bmp280(void);
+uint8_t check_I2C_RXNE_bmp280(void);
 void clearFlag_I2C_ADDR_bmp280(void);
-void check_I2C_TXE_bmp280(void);
+uint8_t check_I2C_TXE_bmp280(void);
 uint8_t readI2C_bmp280(uint8_t address, uint8_t reg);
 void multireadI2C_bmp280(uint8_t address, uint8_t reg, uint8_t * values, uint8_t cnt);
 void writeI2C_bmp280(uint8_t address, uint8_t reg,uint8_t value);

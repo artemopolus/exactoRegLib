@@ -17,6 +17,7 @@
 
 #define I2C_REQUEST_WRITE                       0x00
 #define I2C_REQUEST_READ                        0x01
+#define I2C_MAXCNT  UINT16_C(10000)
 
 void ClockEnPinsI2C_bmp280(void)
 {
@@ -119,7 +120,7 @@ uint8_t readI2C_bmp280(uint8_t address, uint8_t reg)
 	SET_BIT(I2C2->CR1, I2C_CR1_START);
 //	while (!LL_I2C_IsActiveFlag_SB(I2Cx));
 //	return (READ_BIT(I2Cx->SR1, I2C_SR1_SB) == (I2C_SR1_SB));
-	check_I2C_SB_bmp280();
+	if(!check_I2C_SB_bmp280())  return 0;
 	//while(!	(READ_BIT(I2C2->SR1, I2C_SR1_SB) == (I2C_SR1_SB))	);
 	uint8_t trg = (address<<1);
 	//LL_I2C_TransmitData8(I2Cx, trg  | I2C_REQUEST_WRITE);
@@ -127,40 +128,40 @@ uint8_t readI2C_bmp280(uint8_t address, uint8_t reg)
 	/* wait SAK */
 //	while(!LL_I2C_IsActiveFlag_ADDR(I2Cx));
 //	return (READ_BIT(I2Cx->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR));
-	check_I2C_ADDR_bmp280();
+	if(!check_I2C_ADDR_bmp280()) return 0;
 	/* SUB */
 //	LL_I2C_ClearFlag_ADDR(I2Cx);
 	clearFlag_I2C_ADDR_bmp280();
 	//while (!LL_I2C_IsActiveFlag_TXE(I2Cx));
-	check_I2C_TXE_bmp280();
+	if(!check_I2C_TXE_bmp280()) return 0;
 	//LL_I2C_AcknowledgeNextData(I2Cx, LL_I2C_ACK);
 	MODIFY_REG(I2C2->CR1, I2C_CR1_ACK, I2C_CR1_ACK);
 	//LL_I2C_TransmitData8(I2Cx, data);
 	MODIFY_REG(I2C2->DR, I2C_DR_DR, reg);
 	//while (!LL_I2C_IsActiveFlag_TXE(I2Cx));
-	check_I2C_TXE_bmp280();
+	if(!check_I2C_TXE_bmp280()) return 0;
 	/* wait SAK */
 //	while(!LL_I2C_IsActiveFlag_ADDR(I2Cx));
 	/* SR ; SAD + R */
 	//LL_I2C_GenerateStartCondition(I2Cx);
 	SET_BIT(I2C2->CR1, I2C_CR1_START);
 	//while (!LL_I2C_IsActiveFlag_SB(I2Cx));
-	check_I2C_SB_bmp280();
+	if(!check_I2C_SB_bmp280()) return 0;
 	//LL_I2C_AcknowledgeNextData(I2Cx, LL_I2C_ACK);
 	MODIFY_REG(I2C2->CR1, I2C_CR1_ACK, I2C_CR1_ACK);
 	//LL_I2C_TransmitData8(I2Cx, trg  | I2C_REQUEST_READ);
 	MODIFY_REG(I2C2->DR, I2C_DR_DR, (trg  | I2C_REQUEST_READ));
 	/* wait SAK + DATA*/
 	//while(!LL_I2C_IsActiveFlag_ADDR(I2Cx));
-	check_I2C_ADDR_bmp280();
+	if(!check_I2C_ADDR_bmp280()) return 0;
 	//LL_I2C_ClearFlag_ADDR(I2Cx);
 	clearFlag_I2C_ADDR_bmp280();
 	//while (!LL_I2C_IsActiveFlag_RXNE(I2Cx));
-	check_I2C_RXNE_bmp280();
+	if(!check_I2C_RXNE_bmp280()) return 0;
 	//uint8_t res = LL_I2C_ReceiveData8(I2Cx);
 	uint8_t res = (uint8_t)(READ_BIT(I2C2->DR, I2C_DR_DR));
 	//while (!LL_I2C_IsActiveFlag_RXNE(I2Cx));
-	check_I2C_RXNE_bmp280();
+	if(!check_I2C_RXNE_bmp280()) return 0;
 	/* NMAK + SP */
 	//LL_I2C_AcknowledgeNextData(I2Cx, LL_I2C_NACK);
 	MODIFY_REG(I2C2->CR1, I2C_CR1_ACK, 0x00000000U);
@@ -222,17 +223,53 @@ void writeI2C_bmp280(uint8_t address, uint8_t reg,uint8_t value)
 	MODIFY_REG(I2C2->CR1, I2C_CR1_ACK, 0x00000000U);
 	SET_BIT(I2C2->CR1, I2C_CR1_STOP);
 }
-void check_I2C_SB_bmp280(void)
+uint8_t check_I2C_SB_bmp280(void)
 {
-	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_SB) == (I2C_SR1_SB))	);
+    uint16_t i = 0;
+	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_SB) == (I2C_SR1_SB))	)
+    {
+        if(i == I2C_MAXCNT)
+            return 0;
+        else
+            i++;
+    }
+    return 1;
 }
-void check_I2C_ADDR_bmp280(void)
+uint8_t check_I2C_ADDR_bmp280(void)
 {
-	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR))	);
+    uint16_t i = 0;
+	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR))	)
+        {
+        if(i == I2C_MAXCNT)
+            return 0;
+        else
+            i++;
+    }
+    return 1;
 }
-void check_I2C_RXNE_bmp280(void)
+uint8_t check_I2C_RXNE_bmp280(void)
 {
-	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_RXNE) == (I2C_SR1_RXNE))	);
+    uint16_t i = 0;
+	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_RXNE) == (I2C_SR1_RXNE))	)
+        {
+        if(i == I2C_MAXCNT)
+            return 0;
+        else
+            i++;
+    }
+    return 1;
+}
+uint8_t check_I2C_TXE_bmp280(void)
+{
+    uint16_t i = 0;
+	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_TXE) == (I2C_SR1_TXE))	)
+        {
+        if(i == I2C_MAXCNT)
+            return 0;
+        else
+            i++;
+    }
+    return 1;
 }
 void clearFlag_I2C_ADDR_bmp280(void)
 {
@@ -242,8 +279,5 @@ void clearFlag_I2C_ADDR_bmp280(void)
 	tmpreg = I2C2->SR2;
 	(void) tmpreg;
 }
-void check_I2C_TXE_bmp280(void)
-{
-	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_TXE) == (I2C_SR1_TXE))	);
-}
+
 
