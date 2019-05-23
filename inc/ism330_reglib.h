@@ -19,6 +19,8 @@ uint8_t GetGXLData_ism330(uint8_t * data);
 uint8_t GetXLData_ism330(uint8_t * data);
 uint8_t GetGData_ism330(uint8_t * data);
 
+uint8_t Get_T_G_XL_uint8_ism330(uint8_t * data);
+
 __STATIC_INLINE void set_halfduplexTX_ism330(void)
 {
 	MODIFY_REG(SPI2->CR1, (SPI_CR1_RXONLY | SPI_CR1_BIDIMODE | SPI_CR1_BIDIOE), (SPI_CR1_BIDIMODE | SPI_CR1_BIDIOE));

@@ -27,6 +27,7 @@ uint8_t Set3wireAndGetWhoami_lsm303ah(void);
 uint8_t GetReadyFlag_lsm303ah(void);
 uint8_t GetXLallData_lsm303ah(int16_t * data);
 uint8_t GetXLallDataUint8_lsm303ah(uint8_t * data);
+uint8_t Get_XL_M_uint8_lsm303ah(uint8_t * XLdata, uint8_t * Mdata);
 int16_t GetValue_lsm303ah(const uint8_t lsb, const uint8_t msb);
 
 
