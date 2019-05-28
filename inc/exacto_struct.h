@@ -42,7 +42,7 @@ typedef enum{
 #define	EXACTO_FREQ_1HZ 	 0x00U
 
 
-#define EXACTOLBIDATASIZE		36
+#define EXACTOLBIDATASIZE		80
 typedef struct{
     uint8_t lsm303[EXACTOLBIDATASIZE];
     uint8_t bmp280[EXACTOLBIDATASIZE];
