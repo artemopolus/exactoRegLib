@@ -138,6 +138,8 @@ void ConfigurePinsI2C_bmp280(void)
     while(!CheckPin(GPIOB, BMP280_SDA_PIN))
     {
         __NOP();
+			GPIOB->BSRR   |=  GPIO_BSRR_BR10;  
+			GPIOB->BSRR		|= 	GPIO_BSRR_BS10;
     }
 
     //while(READ_BIT(GPIOB->IDR,  GPIO_IDR_IDR10) != GPIO_IDR_IDR10);
