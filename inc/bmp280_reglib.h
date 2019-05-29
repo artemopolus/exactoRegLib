@@ -23,7 +23,8 @@ uint8_t read_bmp280(uint8_t address);
 void multiread_bmp280(uint8_t address, uint8_t * values, uint8_t cnt);
 void write_bmp280(uint8_t address, uint8_t value);
 
-
+void EnReset_bmp280(void);
+void DsReset_bmp280(void);
 
 uint8_t check_I2C_SB_bmp280(void);
 uint8_t check_I2C_ADDR_bmp280(void);

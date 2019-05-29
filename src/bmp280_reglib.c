@@ -19,15 +19,159 @@
 #define I2C_REQUEST_READ                        0x01
 #define I2C_MAXCNT  UINT16_C(10000)
 
+#define GPIO_PIN_MASK_POS   8U
+#define BMP280_SCL_PIN                   ((GPIO_BSRR_BS10 << GPIO_PIN_MASK_POS) | 0x04000004U)  /*!< Select pin 10 */
+#define BMP280_SDA_PIN                   ((GPIO_BSRR_BS11 << GPIO_PIN_MASK_POS) | 0x04000008U)  /*!< Select pin 11 */
+
+
+void EnReset_bmp280(void)
+{
+    SET_BIT(I2C2->CR1, I2C_CR1_SWRST);
+}
+void DsReset_bmp280(void)
+{
+    CLEAR_BIT(I2C2->CR1, I2C_CR1_SWRST);
+}
+void ConfigureGpOutput_SCL(void)
+{
+//__STATIC_INLINE void LL_GPIO_SetPinMode(GPIO_TypeDef *GPIOx, uint32_t Pin, uint32_t Mode)
+//{
+//  register uint32_t *pReg = (uint32_t *)((uint32_t)(&GPIOx->CRL) + (Pin >> 24));
+//  MODIFY_REG(*pReg, ((GPIO_CRL_CNF0 | GPIO_CRL_MODE0) << (POSITION_VAL(Pin) * 4U)), (Mode << (POSITION_VAL(Pin) * 4U)));
+//}
+//LL_GPIO_MODE_INPUT               GPIO_CRL_CNF0_1
+    //#define LL_GPIO_MODE_OUTPUT              GPIO_CRL_MODE0_0  
+    
+    
+//    __STATIC_INLINE void LL_GPIO_SetPinOutputType(GPIO_TypeDef *GPIOx, uint32_t Pin, uint32_t OutputType)
+//{
+//  register uint32_t *pReg = (uint32_t *)((uint32_t)(&GPIOx->CRL) + (Pin >> 24));
+//  MODIFY_REG(*pReg, (GPIO_CRL_CNF0_0 << (POSITION_VAL(Pin) * 4U)),
+//             (OutputType << (POSITION_VAL(Pin) * 4U)));
+//}
+//#define LL_GPIO_OUTPUT_OPENDRAIN         GPIO_CRL_CNF0_0
+    
+//    MODIFY_REG(GPIOB->CRH,((GPIO_CRH_CNF10|GPIO_CRH_MODE10)),GPIO_CRH_MODE10_0);
+//    MODIFY_REG(GPIOB->CRH,GPIO_CRH_CNF10_0,GPIO_CRH_CNF10_0);
+    
+    
+    GPIOB->CRH   &= ~(GPIO_CRH_CNF10    |   GPIO_CRH_MODE10     );
+    GPIOB->CRH   |=  (GPIO_CRH_CNF10_0  |   GPIO_CRH_MODE10     );
+    GPIOB->ODR &= ~ GPIO_ODR_ODR10;
+    GPIOB->ODR |=   GPIO_ODR_ODR10;
+    GPIOB->BSRR   |=  GPIO_BSRR_BS10;  
+
+}
+void ConfigureGpOutput_SDA(void)
+{
+    GPIOB->CRH   &= ~(GPIO_CRH_CNF11    |   GPIO_CRH_MODE11     );
+    GPIOB->CRH   |=  (GPIO_CRH_CNF11_0  |   GPIO_CRH_MODE11     );
+    GPIOB->ODR &= ~ GPIO_ODR_ODR11;
+    GPIOB->ODR |=   GPIO_ODR_ODR11;
+    GPIOB->BSRR   |=  GPIO_BSRR_BS11;  
+//    MODIFY_REG(GPIOB->CRH,((GPIO_CRH_CNF11|GPIO_CRH_MODE11)),GPIO_CRH_MODE11_0);
+//    MODIFY_REG(GPIOB->CRH,GPIO_CRH_CNF11_0,GPIO_CRH_CNF11_0);
+
+}
+
 void ClockEnPinsI2C_bmp280(void)
 {
 	//LL_APB2_GRP1_EnableClock(LL_APB2_GRP1_PERIPH_GPIOB)
-	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
-	//LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_I2C2)
-	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
+//	SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
+//	//LL_APB1_GRP1_EnableClock(LL_APB1_GRP1_PERIPH_I2C2)
+//	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
+    
 }
+
+uint32_t CheckPin(GPIO_TypeDef *GPIOx, uint32_t PinMask)
+{
+    uint32_t CurBit = READ_BIT(GPIOx->IDR, (PinMask >> GPIO_PIN_MASK_POS) & 0x0000FFFFU);
+    uint32_t TrgBit = ((PinMask >> GPIO_PIN_MASK_POS) & 0x0000FFFFU);
+    return (CurBit == TrgBit);
+}
+void SetODR(GPIO_TypeDef *GPIOx, uint32_t Pin)
+{
+    //MODIFY_REG(GPIOx->ODR, (Pin >> GPIO_PIN_MASK_POS), GPIO_ODR_ODR0 << (POSITION_VAL(Pin >> GPIO_PIN_MASK_POS)));
+    WRITE_REG(GPIOx->BSRR, (Pin >> GPIO_PIN_MASK_POS) & 0x0000FFFFU);
+}
+void ResetODR(GPIO_TypeDef *GPIOx, uint32_t Pin)
+{
+    MODIFY_REG(GPIOx->ODR, (Pin >> GPIO_PIN_MASK_POS), 0x00000000U << (POSITION_VAL(Pin >> GPIO_PIN_MASK_POS)));
+}
+
 void ConfigurePinsI2C_bmp280(void)
 {
+    SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
+    
+    
+    CLEAR_BIT(I2C2->CR1,I2C_CR1_PE);
+    
+
+    
+    ConfigureGpOutput_SCL();   
+    ConfigureGpOutput_SDA();   
+//    SET_BIT(GPIOB->ODR,         GPIO_ODR_ODR11);
+//    SET_BIT(GPIOB->ODR,         GPIO_ODR_ODR10);
+
+//    
+    SetODR(GPIOB, BMP280_SCL_PIN);
+    SetODR(GPIOB, BMP280_SDA_PIN);
+    
+    
+    
+//    while(READ_BIT(GPIOB->IDR,  GPIO_IDR_IDR10) != GPIO_IDR_IDR10)
+//        {
+//        __NOP();
+//    }
+//        
+//    while(READ_BIT(GPIOB->IDR,  GPIO_IDR_IDR11) != GPIO_IDR_IDR11)
+//        {
+//        __NOP();
+//    }
+                
+    while(!CheckPin(GPIOB, BMP280_SCL_PIN))
+    {
+        __NOP();
+    }
+    
+    while(!CheckPin(GPIOB, BMP280_SDA_PIN))
+    {
+        __NOP();
+    }
+
+    //while(READ_BIT(GPIOB->IDR,  GPIO_IDR_IDR10) != GPIO_IDR_IDR10);
+    
+    
+    ConfigureGpOutput_SDA();
+    ResetODR(GPIOB, BMP280_SDA_PIN);
+    while(CheckPin(GPIOB, BMP280_SDA_PIN))
+    {
+        __NOP();
+    }
+    ConfigureGpOutput_SCL();  
+    ResetODR(GPIOB, BMP280_SCL_PIN);
+    while(CheckPin(GPIOB, BMP280_SCL_PIN))
+    {
+        __NOP();
+    }
+
+    ConfigureGpOutput_SCL();  
+    SetODR(GPIOB, BMP280_SCL_PIN);
+    while(!CheckPin(GPIOB, BMP280_SCL_PIN))
+    {
+        __NOP();
+    }
+    
+    ConfigureGpOutput_SDA();
+    SetODR(GPIOB, BMP280_SDA_PIN);
+    while(!CheckPin(GPIOB, BMP280_SDA_PIN))
+    {
+        __NOP();
+    }
+    
+//    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
+    
 //	LL_GPIO_SetPinMode			(BMP280_GPIO, BMP280_SCL_PIN, LL_GPIO_MODE_ALTERNATE);
 //	MODIFY_REG(*pReg, ((GPIO_CRL_CNF0 | GPIO_CRL_MODE0) << (POSITION_VAL(Pin) * 4U)), (Mode << (POSITION_VAL(Pin) * 4U)));
 //	LL_GPIO_MODE_ALTERNATE           (GPIO_CRL_CNF0_1 | GPIO_CRL_MODE0_0)
@@ -56,6 +200,13 @@ void ConfigurePinsI2C_bmp280(void)
 	MODIFY_REG(GPIOB->CRH,GPIO_CRH_MODE11,GPIO_CRH_MODE11);
 	MODIFY_REG(GPIOB->CRH,GPIO_CRH_CNF11_0,GPIO_CRH_CNF11_0);
 	MODIFY_REG(GPIOB->ODR, GPIO_ODR_ODR11, GPIO_ODR_ODR11);
+    
+    SET_BIT(I2C2->CR1, I2C_CR1_SWRST);
+    CLEAR_BIT(I2C2->CR1, I2C_CR1_SWRST);
+    
+    SET_BIT(I2C2->CR1,I2C_CR1_PE);
+    
+    //SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
 }
 void ConfigureI2C_bmp280(void)
 {
