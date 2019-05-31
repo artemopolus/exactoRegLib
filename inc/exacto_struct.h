@@ -4,10 +4,12 @@
 #include <stdint.h> 
 
 typedef struct {
-  uint16_t       TDiscr;     
+       
   char Name[6];
     uint8_t Whoami;
-    uint8_t flgSens;  
+    uint8_t flgSens; 
+		uint8_t initFreq;
+	uint16_t       TDiscr;
 } ExactoSensorSet;
 
 typedef struct{

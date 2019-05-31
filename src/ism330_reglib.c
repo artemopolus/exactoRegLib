@@ -111,7 +111,7 @@ uint8_t GetGData_ism330(uint8_t * data)
 }
 uint8_t Get_T_G_XL_uint8_ism330(uint8_t * data)
 {
-	if(read_ism330(ISM330DLC_STATUS_REG))	return 0;
+	if(!read_ism330(ISM330DLC_STATUS_REG))	return 0;
 	multiread_ism330(ISM330DLC_OUT_TEMP_L, data, 14);
 	return 1;
 }

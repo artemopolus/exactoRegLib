@@ -245,7 +245,7 @@ void multiread_bmp280(uint8_t address, uint8_t * values, uint8_t cnt)
 }
 uint8_t GetPresTempValuesUint8_bmp280(uint8_t * data)
 {
-	if(read_bmp280(BMP280_STATUS_ADDR))
+	if(!read_bmp280(BMP280_STATUS_ADDR))
 		return 0; 
 	multiread_bmp280(BMP280_PRES_MSB_ADDR, data, 6);
 	return 1;
