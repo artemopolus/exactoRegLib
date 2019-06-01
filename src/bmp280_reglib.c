@@ -26,11 +26,13 @@
 
 void EnReset_bmp280(void)
 {
-    SET_BIT(I2C2->CR1, I2C_CR1_SWRST);
+	//CLEAR_BIT(I2C2->CR1,I2C_CR1_PE);
+  SET_BIT(I2C2->CR1, I2C_CR1_SWRST);
 }
 void DsReset_bmp280(void)
 {
-    CLEAR_BIT(I2C2->CR1, I2C_CR1_SWRST);
+  CLEAR_BIT(I2C2->CR1, I2C_CR1_SWRST);
+	//SET_BIT(I2C2->CR1,I2C_CR1_PE);
 }
 void ConfigureGpOutput_SCL(void)
 {
@@ -102,7 +104,7 @@ void ResetODR(GPIO_TypeDef *GPIOx, uint32_t Pin)
 void ConfigurePinsI2C_bmp280(void)
 {
     SET_BIT(RCC->APB2ENR, RCC_APB2ENR_IOPBEN);
-	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
+		SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
     
     
     CLEAR_BIT(I2C2->CR1,I2C_CR1_PE);
@@ -219,7 +221,7 @@ void ConfigureI2C_bmp280(void)
 	exacto_RCC_GetSystemClocksFreq	(&rcc_clocks);
 
 
-	exacto_I2C_ConfigSpeed			(I2C2, rcc_clocks.PCLK1_Frequency, 400000, 0x00000000U);
+	exacto_I2C_ConfigSpeed			(I2C2, rcc_clocks.PCLK1_Frequency, 100000, 0x00000000U);
 	//LL_I2C_SetMode				(BMP280_I2C, LL_I2C_MODE_I2C);
 	MODIFY_REG(I2C2->CR1, I2C_CR1_SMBUS | I2C_CR1_SMBTYPE | I2C_CR1_ENARP, 0x00000000U);
 }
