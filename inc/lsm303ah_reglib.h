@@ -12,7 +12,8 @@
 
 #include "lsm303ah_reg.h"
 
-
+#define LSM303_SPI	SPI1
+#define LSM303_TMOUT	UINT16_C(1000)
 //#define LSM303AH_STATUS_A	 		0x27
 //#define LSM303AH_DATA_XL_X_L	0x28
 #define LSM303AH_SELFTEST_ST_MIN	70
@@ -55,13 +56,49 @@ __STATIC_INLINE void check_TXE_lsm303ah(void)
 {
 	while(! (READ_BIT(SPI1->SR, SPI_SR_TXE) == (SPI_SR_TXE))	);
 }
+__STATIC_INLINE uint8_t check_TXE_lsm303ah_fst(void)
+{
+	uint16_t i = 0;
+	while(! (READ_BIT(LSM303_SPI->SR, SPI_SR_TXE) == (SPI_SR_TXE))	)
+	{
+		if(i < LSM303_TMOUT)
+			i++;
+		else 
+			return 0;
+	}
+	return 1;
+}
 __STATIC_INLINE void check_BSY_lsm303ah(void)
 {
 	while(	(READ_BIT(SPI1->SR, SPI_SR_BSY) == (SPI_SR_BSY))	);
 }
+__STATIC_INLINE uint8_t check_BSY_lsm303ah_fst(void)
+{
+	uint16_t i = 0;
+	while(	(READ_BIT(LSM303_SPI->SR, SPI_SR_BSY) == (SPI_SR_BSY))	)
+	{
+		if(i < LSM303_TMOUT)
+			i++;
+		else 
+			return 0;
+	}
+	return 1;
+}
 __STATIC_INLINE void check_RXNE_lsm303ah(void)
 {
 	while(!	(READ_BIT(SPI1->SR, SPI_SR_RXNE) == (SPI_SR_RXNE))	);
+}
+__STATIC_INLINE uint8_t check_RXNE_lsm303ah_fst(void)
+{
+	uint16_t i = 0;
+	while(!	(READ_BIT(LSM303_SPI->SR, SPI_SR_RXNE) == (SPI_SR_RXNE))	)
+	{
+		if(i < LSM303_TMOUT)
+			i++;
+		else 
+			return 0;
+	}
+	return 1;
 }
 __STATIC_INLINE void write_lsm303ah(uint8_t address, uint8_t value)
 {
@@ -142,6 +179,23 @@ __STATIC_INLINE void multiread_lsm303ah( const uint8_t RegAdr, uint8_t * data, c
 //	LL_GPIO_SetOutputPin(GPIOx,PinMask);
 	disable_transmit_lsm303ah();
 }
-
+__STATIC_INLINE uint8_t multiread_lsm303ah_fst( const uint8_t RegAdr, uint8_t * data, const uint32_t datalen )
+{
+	uint8_t value = RegAdr | 0x80;
+	enable_transmit_lsm303ah();
+	if(!check_TXE_lsm303ah_fst()) return 0;
+	LSM303_SPI->DR = value;
+	if(!check_TXE_lsm303ah_fst()) return 0;
+	if(!check_BSY_lsm303ah_fst()) return 0;
+	set_halfduplexRX_lsm303ah();
+	for (uint32_t i = 0; i < datalen; i++)
+	{
+		if(!check_RXNE_lsm303ah_fst()) return 0;
+		data[i] = (uint8_t)(READ_REG(LSM303_SPI->DR));
+	}
+	set_halfduplexTX_lsm303ah();
+	disable_transmit_lsm303ah();
+	return 1;
+}
 
 #endif /* EXACTOREGLIB_INC_LSM303AH_REGLIB_H_ */

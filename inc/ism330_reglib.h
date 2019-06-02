@@ -11,6 +11,9 @@
 #include "exactoBase_driver.h"
 #include "ism330dlc_reg.h"
 
+#define ISM330_SPI	SPI2
+#define ISM330_TMOUT	UINT16_C(1000)
+
 void ConfigureSPI3_ism330(void);
 void ActivateSPI3_ism330(void);
 uint8_t Set3wireAndGetWhoami_ism330(void);
@@ -113,6 +116,60 @@ __STATIC_INLINE void multiread_ism330( const uint8_t RegAdr, uint8_t * data, con
 	}
 	set_halfduplexTX_ism330();
 	disable_transmit_ism330();
+}
+__STATIC_INLINE uint8_t check_TXE_ism330_fst(void)
+{
+	uint16_t i = 0;
+	while(! (READ_BIT(ISM330_SPI->SR, SPI_SR_TXE) == (SPI_SR_TXE))	)
+			{
+		if(i < ISM330_TMOUT)
+			i++;
+		else 
+			return 0;
+	}
+	return 1;
+}
+__STATIC_INLINE uint8_t check_BSY_ism330_fst(void)
+{
+	uint16_t i = 0;
+	while(	(READ_BIT(ISM330_SPI->SR, SPI_SR_BSY) == (SPI_SR_BSY))	)
+			{
+		if(i < ISM330_TMOUT)
+			i++;
+		else 
+			return 0;
+	}
+	return 1;
+}
+__STATIC_INLINE uint8_t check_RXNE_ism330_fst(void)
+{
+	uint16_t i = 0;
+	while(!	(READ_BIT(ISM330_SPI->SR, SPI_SR_RXNE) == (SPI_SR_RXNE))	)
+			{
+		if(i < ISM330_TMOUT)
+			i++;
+		else 
+			return 0;
+	}
+	return 1;
+}
+__STATIC_INLINE uint8_t multiread_ism330_fst( const uint8_t RegAdr, uint8_t * data, const uint32_t datalen )
+{
+	uint8_t value = RegAdr | 0x80;
+	enable_transmit_ism330();
+	if(!check_TXE_ism330_fst()) return 0;
+	ISM330_SPI->DR = value;
+	if(!check_TXE_ism330_fst()) return 0;
+	if(!check_BSY_ism330_fst()) return 0;
+	set_halfduplexRX_ism330();
+	for (uint32_t i = 0; i < datalen; i++)
+	{
+		if(!check_RXNE_ism330_fst()) return 0;
+		data[i] = (uint8_t)(READ_REG(ISM330_SPI->DR));
+	}
+	set_halfduplexTX_ism330();
+	disable_transmit_ism330();
+	return 1;
 }
 
 #endif /* EXACTOREGLIB_INC_ISM330_REGLIB_H_ */
