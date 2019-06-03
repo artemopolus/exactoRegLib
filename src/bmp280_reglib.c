@@ -147,32 +147,32 @@ void ConfigurePinsI2C_bmp280(void)
     //while(READ_BIT(GPIOB->IDR,  GPIO_IDR_IDR10) != GPIO_IDR_IDR10);
     
     
-    ConfigureGpOutput_SDA();
-    ResetODR(GPIOB, BMP280_SDA_PIN);
-    while(CheckPin(GPIOB, BMP280_SDA_PIN))
-    {
-        __NOP();
-    }
-    ConfigureGpOutput_SCL();  
-    ResetODR(GPIOB, BMP280_SCL_PIN);
-    while(CheckPin(GPIOB, BMP280_SCL_PIN))
-    {
-        __NOP();
-    }
+//    ConfigureGpOutput_SDA();
+//    ResetODR(GPIOB, BMP280_SDA_PIN);
+//    while(CheckPin(GPIOB, BMP280_SDA_PIN))
+//    {
+//        __NOP();
+//    }
+//    ConfigureGpOutput_SCL();  
+//    ResetODR(GPIOB, BMP280_SCL_PIN);
+//    while(CheckPin(GPIOB, BMP280_SCL_PIN))
+//    {
+//        __NOP();
+//    }
 
-    ConfigureGpOutput_SCL();  
-    SetODR(GPIOB, BMP280_SCL_PIN);
-    while(!CheckPin(GPIOB, BMP280_SCL_PIN))
-    {
-        __NOP();
-    }
-    
-    ConfigureGpOutput_SDA();
-    SetODR(GPIOB, BMP280_SDA_PIN);
-    while(!CheckPin(GPIOB, BMP280_SDA_PIN))
-    {
-        __NOP();
-    }
+//    ConfigureGpOutput_SCL();  
+//    SetODR(GPIOB, BMP280_SCL_PIN);
+//    while(!CheckPin(GPIOB, BMP280_SCL_PIN))
+//    {
+//        __NOP();
+//    }
+//    
+//    ConfigureGpOutput_SDA();
+//    SetODR(GPIOB, BMP280_SDA_PIN);
+//    while(!CheckPin(GPIOB, BMP280_SDA_PIN))
+//    {
+//        __NOP();
+//    }
     
 //    SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
     
@@ -221,7 +221,7 @@ void ConfigureI2C_bmp280(void)
 	exacto_RCC_GetSystemClocksFreq	(&rcc_clocks);
 
 
-	exacto_I2C_ConfigSpeed			(I2C2, rcc_clocks.PCLK1_Frequency, 100000, 0x00000000U);
+	exacto_I2C_ConfigSpeed			(I2C2, rcc_clocks.PCLK1_Frequency, 400000, 0x00000000U);
 	//LL_I2C_SetMode				(BMP280_I2C, LL_I2C_MODE_I2C);
 	MODIFY_REG(I2C2->CR1, I2C_CR1_SMBUS | I2C_CR1_SMBTYPE | I2C_CR1_ENARP, 0x00000000U);
 }
@@ -245,13 +245,7 @@ void multiread_bmp280(uint8_t address, uint8_t * values, uint8_t cnt)
 {
 	multireadI2C_bmp280(BMP280_I2C_ADDR_SEC, address, values, cnt);
 }
-uint8_t GetPresTempValuesUint8_bmp280(uint8_t * data)
-{
-	if(!read_bmp280(BMP280_STATUS_ADDR))
-		return 0; 
-	multiread_bmp280(BMP280_PRES_MSB_ADDR, data, 6);
-	return 1;
-}
+
 uint8_t GetPresTempValues_bmp280(int32_t * pres, int32_t * temp)
 {
 	if(read_bmp280(BMP280_STATUS_ADDR))
@@ -378,18 +372,7 @@ void writeI2C_bmp280(uint8_t address, uint8_t reg,uint8_t value)
 	MODIFY_REG(I2C2->CR1, I2C_CR1_ACK, 0x00000000U);
 	SET_BIT(I2C2->CR1, I2C_CR1_STOP);
 }
-uint8_t check_I2C_SB_bmp280(void)
-{
-    uint16_t i = 0;
-	while(!	(READ_BIT(I2C2->SR1, I2C_SR1_SB) == (I2C_SR1_SB))	)
-    {
-        if(i == I2C_MAXCNT)
-            return 0;
-        else
-            i++;
-    }
-    return 1;
-}
+
 uint8_t check_I2C_ADDR_bmp280(void)
 {
     uint16_t i = 0;

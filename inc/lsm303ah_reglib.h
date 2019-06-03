@@ -179,6 +179,32 @@ __STATIC_INLINE void multiread_lsm303ah( const uint8_t RegAdr, uint8_t * data, c
 //	LL_GPIO_SetOutputPin(GPIOx,PinMask);
 	disable_transmit_lsm303ah();
 }
+__STATIC_INLINE uint8_t read_lsm303ah_fst(uint8_t address)
+{
+	uint8_t value = address | 0x80;
+	//LL_GPIO_ResetOutputPin(GPIOx,PinMask);
+	enable_transmit_lsm303ah();
+	//while(!LL_SPI_IsActiveFlag_TXE(SPIx));
+	if(!check_TXE_lsm303ah_fst()) return 0;
+	//LL_SPI_TransmitData8(SPIx, value);
+	LSM303_SPI->DR = value;
+	//while(!LL_SPI_IsActiveFlag_TXE(SPIx));
+	if(!check_TXE_lsm303ah_fst()) return 0;
+	//while(LL_SPI_IsActiveFlag_BSY(SPIx));
+	if(!check_BSY_lsm303ah_fst()) return 0;
+	//LL_SPI_SetTransferDirection(SPIx,LL_SPI_HALF_DUPLEX_RX);
+	set_halfduplexRX_lsm303ah();
+	//while(!LL_SPI_IsActiveFlag_RXNE(SPIx));
+	if(!check_RXNE_lsm303ah_fst()) return 0;
+	uint8_t result = 0;
+	//result = LL_SPI_ReceiveData8(SPIx);
+	result = (uint8_t)(READ_REG(LSM303_SPI->DR));
+	//LL_SPI_SetTransferDirection(SPIx,LL_SPI_HALF_DUPLEX_TX);
+	set_halfduplexTX_lsm303ah();
+	//LL_GPIO_SetOutputPin(GPIOx,PinMask);
+	disable_transmit_lsm303ah();
+	return result;
+}
 __STATIC_INLINE uint8_t multiread_lsm303ah_fst( const uint8_t RegAdr, uint8_t * data, const uint32_t datalen )
 {
 	uint8_t value = RegAdr | 0x80;
@@ -195,6 +221,16 @@ __STATIC_INLINE uint8_t multiread_lsm303ah_fst( const uint8_t RegAdr, uint8_t * 
 	}
 	set_halfduplexTX_lsm303ah();
 	disable_transmit_lsm303ah();
+	return 1;
+}
+__STATIC_INLINE uint8_t Get_XL_M_uint8_lsm303ah_fst(uint8_t * XLdata, uint8_t * Mdata)
+{
+	uint8_t res = read_lsm303ah_fst(LSM303AH_STATUS_A);
+	if(!res) return 0;
+  res &= 0x01;
+	if(!res) return 0;
+	multiread_lsm303ah_fst(LSM303AH_OUT_X_L_A, XLdata, 6);
+	multiread_lsm303ah_fst(LSM303AH_OUTX_L_REG_M, Mdata, 6);
 	return 1;
 }
 
