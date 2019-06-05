@@ -1,6 +1,8 @@
 #ifndef EXACTO_DEFS_H_
 #define EXACTO_DEFS_H_
 
+#define ENABLE_FIFO_BUFFER
+
 #define FLG_LSM303  (INT8U) 0x01
 #define FLG_BMP280  (INT8U) 0x02
 #define FLG_ISM330  (INT8U) 0x04

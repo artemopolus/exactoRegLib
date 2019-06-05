@@ -205,6 +205,32 @@ __STATIC_INLINE uint8_t read_lsm303ah_fst(uint8_t address)
 	disable_transmit_lsm303ah();
 	return result;
 }
+__STATIC_INLINE uint8_t multiread_lsm303ah_init( const uint8_t RegAdr )
+{
+    uint8_t value = RegAdr | 0x80;
+	enable_transmit_lsm303ah();
+	if(!check_TXE_lsm303ah_fst()) 
+		return 0;
+	LSM303_SPI->DR = value;
+	if(!check_TXE_lsm303ah_fst()) 
+		return 0;
+	if(!check_BSY_lsm303ah_fst()) 
+		return 0;
+	set_halfduplexRX_lsm303ah();
+    return 1;
+}
+__STATIC_INLINE uint8_t multiread_lsm303ah_data(uint8_t * data )
+{
+    if(!check_RXNE_lsm303ah_fst()) 
+		return 0;
+	*data = (uint8_t)(READ_REG(LSM303_SPI->DR));
+    return 1;
+}
+__STATIC_INLINE void multiread_lsm303ah_rls(void)
+{
+    set_halfduplexTX_lsm303ah();
+	disable_transmit_lsm303ah();
+}
 __STATIC_INLINE uint8_t multiread_lsm303ah_fst( const uint8_t RegAdr, uint8_t * data, const uint32_t datalen )
 {
 	uint8_t value = RegAdr | 0x80;

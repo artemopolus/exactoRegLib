@@ -23,7 +23,8 @@ typedef enum{
     EXACTO_BUFLEN_08 = 8,
     EXACTO_BUFLEN_16 = 16,
     EXACTO_BUFLEN_64 = 64,
-    EXACTO_BUFLEN_128 = 128
+    EXACTO_BUFLEN_128 = 128,
+    EXACTO_BUFLEN_256 = 256
 }ExactoBufferUint8TypSizes;
 
 #define __static_inline static inline

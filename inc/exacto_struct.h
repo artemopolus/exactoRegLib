@@ -14,8 +14,11 @@ typedef struct {
 
 typedef struct{
 	uint8_t pSensor;
+    uint8_t s1_status;
 	uint8_t s1[6];
+    uint8_t s2_status;
 	uint8_t s2[6];
+    uint8_t sL_status;
 	uint8_t sL[14];
 }SensorData;
 
