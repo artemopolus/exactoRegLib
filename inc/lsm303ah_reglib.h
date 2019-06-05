@@ -13,7 +13,7 @@
 #include "lsm303ah_reg.h"
 
 #define LSM303_SPI	SPI1
-#define LSM303_TMOUT	UINT16_C(1000)
+#define LSM303_TMOUT	UINT16_C(100)
 //#define LSM303AH_STATUS_A	 		0x27
 //#define LSM303AH_DATA_XL_X_L	0x28
 #define LSM303AH_SELFTEST_ST_MIN	70
@@ -209,14 +209,18 @@ __STATIC_INLINE uint8_t multiread_lsm303ah_fst( const uint8_t RegAdr, uint8_t * 
 {
 	uint8_t value = RegAdr | 0x80;
 	enable_transmit_lsm303ah();
-	if(!check_TXE_lsm303ah_fst()) return 0;
+	if(!check_TXE_lsm303ah_fst()) 
+		return 0;
 	LSM303_SPI->DR = value;
-	if(!check_TXE_lsm303ah_fst()) return 0;
-	if(!check_BSY_lsm303ah_fst()) return 0;
+	if(!check_TXE_lsm303ah_fst()) 
+		return 0;
+	if(!check_BSY_lsm303ah_fst()) 
+		return 0;
 	set_halfduplexRX_lsm303ah();
 	for (uint32_t i = 0; i < datalen; i++)
 	{
-		if(!check_RXNE_lsm303ah_fst()) return 0;
+		if(!check_RXNE_lsm303ah_fst()) 
+			return 0;
 		data[i] = (uint8_t)(READ_REG(LSM303_SPI->DR));
 	}
 	set_halfduplexTX_lsm303ah();
@@ -229,8 +233,8 @@ __STATIC_INLINE uint8_t Get_XL_M_uint8_lsm303ah_fst(uint8_t * XLdata, uint8_t * 
 	if(!res) return 0;
   res &= 0x01;
 	if(!res) return 0;
-	multiread_lsm303ah_fst(LSM303AH_OUT_X_L_A, XLdata, 6);
-	multiread_lsm303ah_fst(LSM303AH_OUTX_L_REG_M, Mdata, 6);
+	if(!multiread_lsm303ah_fst(LSM303AH_OUT_X_L_A, XLdata, 3)) return 0;
+//	if(!multiread_lsm303ah_fst(LSM303AH_OUTX_L_REG_M, Mdata, 6)) return 0;
 	return 1;
 }
 
