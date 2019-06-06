@@ -47,14 +47,17 @@ typedef enum{
 #define	EXACTO_FREQ_1HZ 	 0x00U
 
 
-#define EXACTOLBIDATASIZE		80
+#define EXACTOLBIDATASIZE		512
+#define EXACTOLSM303SZ		280
+#define EXACTOBMP280SZ		280
+#define EXACTOISM330SZ		512
 typedef struct{
-    uint8_t lsm303[EXACTOLBIDATASIZE];
-    uint8_t bmp280[EXACTOLBIDATASIZE];
-    uint8_t ism330[EXACTOLBIDATASIZE];
-    uint8_t cnt_lsm303;
-    uint8_t cnt_bmp280;
-    uint8_t cnt_ism330;
+    uint8_t lsm303[EXACTOLSM303SZ];
+    uint8_t bmp280[EXACTOBMP280SZ];
+    uint8_t ism330[EXACTOISM330SZ];
+    uint16_t cnt_lsm303;
+    uint16_t cnt_bmp280;
+    uint16_t cnt_ism330;
 }ExactoLBIdata;
 
 #endif
