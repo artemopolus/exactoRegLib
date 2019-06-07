@@ -48,16 +48,16 @@ typedef enum{
 
 
 #define EXACTOLBIDATASIZE		512
-#define EXACTOLSM303SZ		280
-#define EXACTOBMP280SZ		280
+#define EXACTOLSM303SZ		512
+#define EXACTOBMP280SZ		512
 #define EXACTOISM330SZ		512
 typedef struct{
     uint8_t lsm303[EXACTOLSM303SZ];
     uint8_t bmp280[EXACTOBMP280SZ];
     uint8_t ism330[EXACTOISM330SZ];
-    uint16_t cnt_lsm303;
-    uint16_t cnt_bmp280;
-    uint16_t cnt_ism330;
+    uint32_t cnt_lsm303;
+    uint32_t cnt_bmp280;
+    uint32_t cnt_ism330;
 }ExactoLBIdata;
 
 #endif
