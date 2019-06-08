@@ -22,10 +22,10 @@ void getNewDataFromI2C_i2c_dma_slave(void);
 
 void SetData2word2Transmit_i2c_dma_slave(uint8_t *pData);
 
-void DMA1_Channel4_IRQHandler(void);
-void DMA1_Channel5_IRQHandler(void);
+void DMA_Body_TX_IRQHandler(void);
+void DMA_Body_RX_IRQHandler(void);
 
-void I2C1_EV_IRQHandler(void);
+void I2C_DMA_Body_EV_IRQHandler(void);
 
 void Transmit_Init_i2c_dma_slave(void);
 void Receive_Init_i2c_dma_slave(void);

@@ -20,9 +20,18 @@
 //
 //#define I2C_DMA_DMA					DMA1
 //#define I2C_DMA_DMA_RECEIVE			LL_DMA_CHANNEL_5
-//#define I2C_DMA_DMA_RECEIVE_IRQn	DMA1_Channel5_IRQn
+
 //#define I2C_DMA_DMA_TRANSMIT		LL_DMA_CHANNEL_4
-//#define I2C_DMA_DMA_TRANSMIT_IRQn	DMA1_Channel4_IRQn
+#define I2C_DMA_DMA_RX_IRQnHandler	DMA1_Channel5_IRQHandler
+#define I2C_DMA_DMA_TX_IRQnHandler	DMA1_Channel4_IRQHandler
+#define I2C_DMA_DMA_RECEIVE_IRQn	DMA1_Channel5_IRQn
+#define I2C_DMA_DMA_TRANSMIT_IRQn	DMA1_Channel4_IRQn
+#define I2C_DMA_DMA_CHANNEL_RX	DMA1_Channel5
+#define I2C_DMA_DMA_CHANNEL_TX	DMA1_Channel4
+#define I2C_DMA_I2C	I2C1
+#define I2C_DMA_DMA	DMA1
+#define	I2C_DMA_I2C_EV_IRQn I2C1_EV_IRQn
+#define	I2C_DMA_I2C_ER_IRQn I2C1_ER_IRQn
 
 #define SLAVE_BYTE_TO_SEND       (uint8_t)0xA5
 
@@ -55,10 +64,10 @@ void ConfigureMode_i2c_dma_slave(void)
 	SET_BIT(RCC->AHBENR, RCC_AHBENR_DMA1EN);
 
 	/* (2) Configure NVIC for DMA transfer complete/error interrupts */
-	NVIC_SetPriority(DMA1_Channel5_IRQn, 0); /* another var: 0x04 */
-	NVIC_EnableIRQ(DMA1_Channel5_IRQn);
-	NVIC_SetPriority(DMA1_Channel4_IRQn, 0); /* 0x01 */
-	NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+	NVIC_SetPriority(I2C_DMA_DMA_RECEIVE_IRQn, 0); /* another var: 0x04 */
+	NVIC_EnableIRQ(I2C_DMA_DMA_RECEIVE_IRQn);
+	NVIC_SetPriority(I2C_DMA_DMA_TRANSMIT_IRQn, 0); /* 0x01 */
+	NVIC_EnableIRQ(I2C_DMA_DMA_TRANSMIT_IRQn);
 
 
 //	LL_DMA_ConfigTransfer(I2C_DMA_DMA, I2C_DMA_DMA_RECEIVE, LL_DMA_DIRECTION_PERIPH_TO_MEMORY | \
@@ -90,7 +99,7 @@ void ConfigureMode_i2c_dma_slave(void)
 	//LL_DMA_SetDataLength(I2C_DMA_DMA, I2C_DMA_DMA_RECEIVE, ubNbaReceiveBufferDMA);
     
 #ifdef EXACTO_SPL
-	MODIFY_REG(DMA1_Channel5->CNDTR,   DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
+	MODIFY_REG(I2C_DMA_DMA_CHANNEL_RX->CNDTR,   DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
 #endif
 #ifdef EXACTO_HAL
     MODIFY_REG(DMA1_Channel5->CNDTR,   DMA_CNDTR_NDT, uCountReceive_i2c_dma_slave);
@@ -99,8 +108,8 @@ void ConfigureMode_i2c_dma_slave(void)
 //	LL_DMA_ConfigAddresses(I2C_DMA_DMA, I2C_DMA_DMA_RECEIVE, (uint32_t)LL_I2C_DMA_GetRegAddr(I2C_DMA_SLAVE),
 //			(uint32_t)&(aReceiveBufferDMA), LL_DMA_GetDataTransferDirection(I2C_DMA_DMA, I2C_DMA_DMA_RECEIVE));
 
-	WRITE_REG(DMA1_Channel5->CPAR, (uint32_t) & (I2C1->DR));
-	WRITE_REG(DMA1_Channel5->CMAR, (uint32_t)&(ptReceive_i2c_dma_slave));
+	WRITE_REG(I2C_DMA_DMA_CHANNEL_RX->CPAR, (uint32_t) & (I2C1->DR));
+	WRITE_REG(I2C_DMA_DMA_CHANNEL_RX->CMAR, (uint32_t)&(ptReceive_i2c_dma_slave));
 
 //	/* (4) Configure the DMA1_Channel6 functionnal parameters */
 //	LL_DMA_ConfigTransfer(I2C_DMA_DMA, I2C_DMA_DMA_TRANSMIT, LL_DMA_DIRECTION_MEMORY_TO_PERIPH | \
@@ -113,9 +122,9 @@ void ConfigureMode_i2c_dma_slave(void)
 
 #ifdef EXACTO_SPL
 	conf = DMA_CCR1_DIR | DMA_CCR1_PL_1 | 0x00000000U | 0x00000000U | DMA_CCR1_MINC | 0x00000000U | 0x00000000U;
-	MODIFY_REG(DMA1_Channel4->CCR, (DMA_CCR1_DIR | DMA_CCR1_MEM2MEM | DMA_CCR1_CIRC | DMA_CCR1_PINC | DMA_CCR1_MINC | DMA_CCR1_PSIZE | DMA_CCR1_MSIZE | DMA_CCR1_PL),conf);
+	MODIFY_REG(I2C_DMA_DMA_CHANNEL_TX->CCR, (DMA_CCR1_DIR | DMA_CCR1_MEM2MEM | DMA_CCR1_CIRC | DMA_CCR1_PINC | DMA_CCR1_MINC | DMA_CCR1_PSIZE | DMA_CCR1_MSIZE | DMA_CCR1_PL),conf);
 	//LL_DMA_SetDataLength(I2C_DMA_DMA, I2C_DMA_DMA_TRANSMIT, ubNbTBDataToTransmit);
-	MODIFY_REG(DMA1_Channel4->CNDTR,   DMA_CNDTR1_NDT, uCountTransmit_i2c_dma_slave);
+	MODIFY_REG(I2C_DMA_DMA_CHANNEL_TX->CNDTR,   DMA_CNDTR1_NDT, uCountTransmit_i2c_dma_slave);
 #endif
 #ifdef EXACTO_HAL
     conf = DMA_CCR_DIR | DMA_CCR_PL_1 | 0x00000000U | 0x00000000U | DMA_CCR_MINC | 0x00000000U | 0x00000000U;
@@ -127,8 +136,8 @@ void ConfigureMode_i2c_dma_slave(void)
 //	LL_DMA_ConfigAddresses(I2C_DMA_DMA, I2C_DMA_DMA_TRANSMIT,
 //			(uint32_t)pTransmitBufferDMA,(uint32_t)LL_I2C_DMA_GetRegAddr(I2C_DMA_SLAVE),
 //			LL_DMA_GetDataTransferDirection(I2C_DMA_DMA, I2C_DMA_DMA_TRANSMIT));
-	WRITE_REG(DMA1_Channel4->CMAR, (uint32_t)ptTransmit_i2c_dma_slave);
-	WRITE_REG(DMA1_Channel4->CPAR, (uint32_t) & (I2C1->DR));
+	WRITE_REG(I2C_DMA_DMA_CHANNEL_TX->CMAR, (uint32_t)ptTransmit_i2c_dma_slave);
+	WRITE_REG(I2C_DMA_DMA_CHANNEL_TX->CPAR, (uint32_t) & (I2C1->DR));
 
 	/* (4) Enable DMA interrupts complete/error */
 	
@@ -144,13 +153,13 @@ void ConfigureMode_i2c_dma_slave(void)
 #endif
 #ifdef EXACTO_SPL
 	//LL_DMA_EnableIT_TC(I2C_DMA_DMA, I2C_DMA_DMA_RECEIVE);
-	SET_BIT(DMA1_Channel5->CCR, DMA_CCR1_TCIE);
+	SET_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_TCIE);
 	//LL_DMA_EnableIT_TE(I2C_DMA_DMA, I2C_DMA_DMA_RECEIVE);
-	SET_BIT(DMA1_Channel5->CCR, DMA_CCR1_TEIE);
+	SET_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_TEIE);
 	//LL_DMA_EnableIT_TC(I2C_DMA_DMA, I2C_DMA_DMA_TRANSMIT);
-	SET_BIT(DMA1_Channel4->CCR, DMA_CCR1_TCIE);
+	SET_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_TCIE);
 	//LL_DMA_EnableIT_TE(I2C_DMA_DMA, I2C_DMA_DMA_TRANSMIT);
-	SET_BIT(DMA1_Channel4->CCR, DMA_CCR1_TEIE);
+	SET_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_TEIE);
 #endif
 
 
@@ -181,24 +190,24 @@ void ConfigureMode_i2c_dma_slave(void)
 	MODIFY_REG(GPIOB->CRL, GPIO_CRL_CNF7_0,GPIO_CRL_CNF7_0);
 	MODIFY_REG(GPIOB->ODR, GPIO_ODR_ODR7, GPIO_ODR_ODR7);
 	/* Configure interrupt */
-	NVIC_SetPriority(I2C1_EV_IRQn, 0);
-	NVIC_EnableIRQ(I2C1_EV_IRQn);
-	NVIC_SetPriority(I2C1_ER_IRQn, 0);
-	NVIC_EnableIRQ(I2C1_ER_IRQn);
+	NVIC_SetPriority(I2C_DMA_I2C_EV_IRQn, 0);
+	NVIC_EnableIRQ(I2C_DMA_I2C_EV_IRQn);
+	NVIC_SetPriority(I2C_DMA_I2C_ER_IRQn, 0);
+	NVIC_EnableIRQ(I2C_DMA_I2C_ER_IRQn);
 	/* (3) Configure I2C1 functional parameters ********************************/
 	//LL_I2C_Disable(I2C_DMA_SLAVE);
-	CLEAR_BIT(I2C1->CR1, I2C_CR1_PE);
+	CLEAR_BIT(I2C_DMA_I2C->CR1, I2C_CR1_PE);
 	//LL_I2C_SetOwnAddress1(I2C_DMA_SLAVE, SLAVE_OWN_ADDRESS, LL_I2C_OWNADDRESS1_7BIT);
-	MODIFY_REG(I2C1->OAR1, I2C_OAR1_ADD0 | I2C_OAR1_ADD1_7 | I2C_OAR1_ADD8_9 | I2C_OAR1_ADDMODE, SLAVE_OWN_ADDRESS | 0x00004000U);
+	MODIFY_REG(I2C_DMA_I2C->OAR1, I2C_OAR1_ADD0 | I2C_OAR1_ADD1_7 | I2C_OAR1_ADD8_9 | I2C_OAR1_ADDMODE, SLAVE_OWN_ADDRESS | 0x00004000U);
 }
 void Activate2work_i2c_dma_slave(void)
 {
 	//LL_I2C_Enable(I2C_DMA_SLAVE);
-	SET_BIT(I2C1->CR1, I2C_CR1_PE);
+	SET_BIT(I2C_DMA_I2C->CR1, I2C_CR1_PE);
 	//LL_I2C_EnableIT_EVT(I2C_DMA_SLAVE);
-	SET_BIT(I2C1->CR2, I2C_CR2_ITEVTEN);
+	SET_BIT(I2C_DMA_I2C->CR2, I2C_CR2_ITEVTEN);
 	//LL_I2C_EnableIT_ERR(I2C_DMA_SLAVE);
-	SET_BIT(I2C1->CR2, I2C_CR2_ITERREN);
+	SET_BIT(I2C_DMA_I2C->CR2, I2C_CR2_ITERREN);
 }
 void Handle_i2c_dma_slave()
 {
@@ -207,8 +216,8 @@ void Handle_i2c_dma_slave()
 	SetData2word2Transmit_i2c_dma_slave(stringData);
 	/* Включаем буффер на прием данных */
 #ifdef EXACTO_SPL
-	MODIFY_REG(DMA1_Channel5->CNDTR, DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
-	SET_BIT(DMA1_Channel5->CCR, DMA_CCR1_EN);
+	MODIFY_REG(I2C_DMA_DMA_CHANNEL_RX->CNDTR, DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
+	SET_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN);
 #endif
 #ifdef EXACTO_HAL
     //LL_DMA_SetDataLength(I2C_DMA_DMA, I2C_DMA_DMA_RECEIVE, ubNbaReceiveBufferDMA);
@@ -218,36 +227,36 @@ void Handle_i2c_dma_slave()
 #endif
 	/* Создаем сигнал принятия для проверки адреса */
 	//LL_I2C_AcknowledgeNextData(I2C_DMA_SLAVE, LL_I2C_ACK);
-	MODIFY_REG(I2C1->CR1, I2C_CR1_ACK, I2C_CR1_ACK);
+	MODIFY_REG(I2C_DMA_I2C->CR1, I2C_CR1_ACK, I2C_CR1_ACK);
 }
 #ifdef EXACTO_SPL
-void DMA1_Channel4_IRQHandler(void)
+void DMA_Body_TX_IRQHandler(void)
 {
 	//if(LL_DMA_IsActiveFlag_TC4(I2C_DMA_DMA))
-	if((READ_BIT(DMA1->ISR, DMA_ISR_TCIF4) == (DMA_ISR_TCIF4)))
+	if((READ_BIT(I2C_DMA_DMA->ISR, DMA_ISR_TCIF4) == (DMA_ISR_TCIF4)))
 	{
 		//LL_DMA_ClearFlag_GI4(I2C_DMA_DMA);
-		WRITE_REG(DMA1->IFCR, DMA_IFCR_CGIF4);
+		WRITE_REG(I2C_DMA_DMA->IFCR, DMA_IFCR_CGIF4);
 		Transfer_Complete_i2c_dma_slave();
 	}
 //	else if(LL_DMA_IsActiveFlag_TE4(I2C_DMA_DMA))
-	else if(READ_BIT(DMA1->ISR, DMA_ISR_TEIF4) == (DMA_ISR_TEIF4))
+	else if(READ_BIT(I2C_DMA_DMA->ISR, DMA_ISR_TEIF4) == (DMA_ISR_TEIF4))
 	{
 		Transfer_Error_i2c_dma_slave();
 	}
 }
 
-void DMA1_Channel5_IRQHandler(void)
+void DMA_Body_RX_IRQHandler(void)
 {
 //	if(LL_DMA_IsActiveFlag_TC5(I2C_DMA_DMA))
-	if (READ_BIT(DMA1->ISR, DMA_ISR_TCIF5) == (DMA_ISR_TCIF5))
+	if (READ_BIT(I2C_DMA_DMA->ISR, DMA_ISR_TCIF5) == (DMA_ISR_TCIF5))
 	{
 		//LL_DMA_ClearFlag_GI5(I2C_DMA_DMA);
-		WRITE_REG(DMA1->IFCR, DMA_IFCR_CGIF5);
+		WRITE_REG(I2C_DMA_DMA->IFCR, DMA_IFCR_CGIF5);
 		Transfer_Complete_i2c_dma_slave();
 	}
 //	else if(LL_DMA_IsActiveFlag_TE5(I2C_DMA_DMA))
-	else if (READ_BIT(DMA1->ISR, DMA_ISR_TEIF5) == (DMA_ISR_TEIF5))
+	else if (READ_BIT(I2C_DMA_DMA->ISR, DMA_ISR_TEIF5) == (DMA_ISR_TEIF5))
 	{
 		Transfer_Error_i2c_dma_slave();
 	}
@@ -274,10 +283,10 @@ void Transfer_Complete_i2c_dma_slave()
 void Transfer_Error_i2c_dma_slave()
 {
 	/* Disable DMA1_Channel7_IRQn */
-	NVIC_DisableIRQ(DMA1_Channel5_IRQn);
+	NVIC_DisableIRQ(I2C_DMA_DMA_RECEIVE_IRQn);
 
 	/* Disable DMA1_Channel6_IRQn */
-	NVIC_DisableIRQ(DMA1_Channel4_IRQn);
+	NVIC_DisableIRQ(I2C_DMA_DMA_TRANSMIT_IRQn);
 }
 void getNewDataFromI2C_i2c_dma_slave()
 {
@@ -293,11 +302,11 @@ void getNewDataFromI2C_i2c_dma_slave()
 		//printf("None");
     }
 }
-void I2C1_EV_IRQHandler(void)
+void I2C_DMA_Body_EV_IRQHandler(void)
 {
 	/* Check ADDR flag value in ISR register */
 	//if(LL_I2C_IsActiveFlag_ADDR(I2C_DMA_SLAVE))
-	if(READ_BIT(I2C1->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR))
+	if(READ_BIT(I2C_DMA_I2C->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR))
 	{
 		switch(Mode_i2c_dma_slave)
 		{
@@ -305,7 +314,7 @@ void I2C1_EV_IRQHandler(void)
 			if(flagReceiveTransferComplete_i2c_dma_slave)
 			{
 				//switch(LL_I2C_GetTransferDirection(I2C_DMA_SLAVE))
-				switch((uint32_t)(READ_BIT(I2C1->SR2, I2C_SR2_TRA)))
+				switch((uint32_t)(READ_BIT(I2C_DMA_I2C->SR2, I2C_SR2_TRA)))
 				{
 				case (I2C_SR2_TRA):
 						Transmit_Init_i2c_dma_slave();
@@ -319,7 +328,7 @@ void I2C1_EV_IRQHandler(void)
 		break;
 		case (TRANSMIT):
 			//if ((LL_I2C_GetTransferDirection(I2C_DMA_SLAVE) == LL_I2C_DIRECTION_WRITE)&&(ubTransmitTransferComplete))
-			if ((((uint32_t)(READ_BIT(I2C1->SR2, I2C_SR2_TRA))) == I2C_SR2_TRA)&&(flagTransmitTransferComplete_i2c_dma_slave))
+			if ((((uint32_t)(READ_BIT(I2C_DMA_I2C->SR2, I2C_SR2_TRA))) == I2C_SR2_TRA)&&(flagTransmitTransferComplete_i2c_dma_slave))
 			{
 				Transmit_Init_i2c_dma_slave();
 			}
@@ -327,13 +336,13 @@ void I2C1_EV_IRQHandler(void)
 		}
 	}
 	//else if(LL_I2C_IsActiveFlag_STOP(I2C_DMA_SLAVE))
-	else if(READ_BIT(I2C1->SR1, I2C_SR1_STOPF) == (I2C_SR1_STOPF))
+	else if(READ_BIT(I2C_DMA_I2C->SR1, I2C_SR1_STOPF) == (I2C_SR1_STOPF))
 	{
 		//LL_I2C_ClearFlag_STOP(I2C_DMA_SLAVE);
 		__IO uint32_t tmpreg;
-		tmpreg = I2C1->SR1;
+		tmpreg = I2C_DMA_I2C->SR1;
 		(void) tmpreg;
-		SET_BIT(I2C1->CR1, I2C_CR1_PE);
+		SET_BIT(I2C_DMA_I2C->CR1, I2C_CR1_PE);
 		Transfer_Complete_i2c_dma_slave();
 	}
 }
@@ -360,23 +369,23 @@ void Transmit_Init_i2c_dma_slave()
 	}
     #endif
     #ifdef EXACTO_SPL
-	if(READ_BIT(DMA1_Channel5->CCR, DMA_CCR1_EN) == (DMA_CCR1_EN))
+	if(READ_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN) == (DMA_CCR1_EN))
 	{
-		CLEAR_BIT(DMA1_Channel5->CCR, DMA_CCR1_EN);
+		CLEAR_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN);
         ptTransmit_i2c_dma_slave = (uint32_t*)(&pTransmitBuffer_i2c_dma_slave);
-		MODIFY_REG(DMA1_Channel4->CNDTR,  DMA_CNDTR1_NDT, uCountTransmit_i2c_dma_slave);
-		SET_BIT(DMA1_Channel4->CCR, DMA_CCR1_EN);
+		MODIFY_REG(I2C_DMA_DMA_CHANNEL_TX->CNDTR,  DMA_CNDTR1_NDT, uCountTransmit_i2c_dma_slave);
+		SET_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_EN);
 	}
     #endif
 	
 	Status_i2c_dma_slave = WRITE;
 	//LL_I2C_EnableDMAReq_TX(I2C_DMA_SLAVE);
-	SET_BIT(I2C1->CR2, I2C_CR2_DMAEN);
+	SET_BIT(I2C_DMA_I2C->CR2, I2C_CR2_DMAEN);
 	//LL_I2C_ClearFlag_ADDR(I2C_DMA_SLAVE);
 	__IO uint32_t tmpreg;
-	tmpreg = I2C1->SR1;
+	tmpreg = I2C_DMA_I2C->SR1;
 	(void) tmpreg;
-	tmpreg = I2C1->SR2;
+	tmpreg = I2C_DMA_I2C->SR2;
 	(void) tmpreg;
 }
 void Receive_Init_i2c_dma_slave()
@@ -402,16 +411,16 @@ void Receive_Init_i2c_dma_slave()
     }
 #endif
 #ifdef EXACTO_SPL
-    if	(READ_BIT(DMA1_Channel4->CCR, DMA_CCR1_EN) == (DMA_CCR1_EN))
+    if	(READ_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_EN) == (DMA_CCR1_EN))
     {
-        CLEAR_BIT(DMA1_Channel4->CCR, DMA_CCR1_EN);
-        MODIFY_REG(DMA1_Channel5->CNDTR,  DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
-        SET_BIT(DMA1_Channel5->CCR, DMA_CCR1_EN);
+        CLEAR_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_EN);
+        MODIFY_REG(I2C_DMA_DMA_CHANNEL_RX->CNDTR,  DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
+        SET_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN);
 	}
     else{
-        CLEAR_BIT(DMA1_Channel5->CCR, DMA_CCR1_EN);
-        MODIFY_REG(DMA1_Channel5->CNDTR,  DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
-        SET_BIT(DMA1_Channel5->CCR, DMA_CCR1_EN);
+        CLEAR_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN);
+        MODIFY_REG(I2C_DMA_DMA_CHANNEL_RX->CNDTR,  DMA_CNDTR1_NDT, uCountReceive_i2c_dma_slave);
+        SET_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN);
     }
 #endif
 
@@ -419,32 +428,32 @@ void Receive_Init_i2c_dma_slave()
 	if(uCountReceive_i2c_dma_slave == 1){
 		/* Prepare the generation of a Non ACKnowledge condition after next received byte */
 		//LL_I2C_AcknowledgeNextData(I2C_DMA_SLAVE, LL_I2C_NACK);
-		MODIFY_REG(I2C1->CR1, I2C_CR1_ACK, 0x00000000U);
+		MODIFY_REG(I2C_DMA_I2C->CR1, I2C_CR1_ACK, 0x00000000U);
 		/* Enable DMA transmission requests */
 		//LL_I2C_EnableDMAReq_RX(I2C_DMA_SLAVE);
-		SET_BIT(I2C1->CR2, I2C_CR2_DMAEN);
+		SET_BIT(I2C_DMA_I2C->CR2, I2C_CR2_DMAEN);
 	}
 	else if(uCountReceive_i2c_dma_slave == 2){
 		/* Prepare the generation of a Non ACKnowledge condition after next received byte */
 		//LL_I2C_AcknowledgeNextData(I2C_DMA_SLAVE, LL_I2C_NACK);
-		MODIFY_REG(I2C1->CR1, I2C_CR1_ACK, 0x00000000U);
+		MODIFY_REG(I2C_DMA_I2C->CR1, I2C_CR1_ACK, 0x00000000U);
 		/* Enable Pos */
 		//LL_I2C_EnableBitPOS(I2C_DMA_SLAVE);
-		SET_BIT(I2C1->CR1, I2C_CR1_POS);
+		SET_BIT(I2C_DMA_I2C->CR1, I2C_CR1_POS);
 	}
 	else{
 		/* Enable Last DMA bit */
 		//LL_I2C_EnableLastDMA(I2C_DMA_SLAVE);
-		SET_BIT(I2C1->CR2, I2C_CR2_LAST);
+		SET_BIT(I2C_DMA_I2C->CR2, I2C_CR2_LAST);
 		/* Enable DMA transmission requests */
 		//LL_I2C_EnableDMAReq_RX(I2C_DMA_SLAVE);
-		SET_BIT(I2C1->CR2, I2C_CR2_DMAEN);
+		SET_BIT(I2C_DMA_I2C->CR2, I2C_CR2_DMAEN);
 	}
 	//LL_I2C_ClearFlag_ADDR(I2C_DMA_SLAVE);
 	  __IO uint32_t tmpreg;
-	  tmpreg = I2C1->SR1;
+	  tmpreg = I2C_DMA_I2C->SR1;
 	  (void) tmpreg;
-	  tmpreg = I2C1->SR2;
+	  tmpreg = I2C_DMA_I2C->SR2;
 	  (void) tmpreg;
 }
 void SetData2word2Transmit_i2c_dma_slave(uint8_t *pData)
