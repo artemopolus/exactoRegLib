@@ -39,7 +39,9 @@ typedef enum{
 typedef enum{
 	ALLWAITING_ESM = 0,
 	ONLYLSM303_ESM = 1,
-	ALLRUNNING_ESM = 2
+	ONLYBMP280_ESM = 2,
+	ONLYISM330_ESM = 3,
+	ALLRUNNING_ESM = 7
 }ExactoSensMode;
 
 #define	EXACTO_FREQ_100HZ  0x02U
