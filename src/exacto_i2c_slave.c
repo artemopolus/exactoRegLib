@@ -170,7 +170,7 @@ void ConfigureMode_i2c_dma_slave(void)
 	/* (2) Enable the I2C1 peripheral clock *************************************/
 	/* Enable the peripheral clock for I2C1 */
 	//LL_APB1_GRP1_EnableClock(I2C_DMA_SLAVE_APB1_GRP1_PERIPH_I2C);
-	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C2EN);
+	SET_BIT(RCC->APB1ENR, RCC_APB1ENR_I2C1EN);
 	/* Configure SCL Pin as : Alternate function, High Speed, Open drain, Pull up */
 //	LL_GPIO_SetPinMode(			I2C_DMA_SLAVE_GPIO, I2C_DMA_SLAVE_SCL_PIN, LL_GPIO_MODE_ALTERNATE);
 //	LL_GPIO_SetPinSpeed(		I2C_DMA_SLAVE_GPIO, I2C_DMA_SLAVE_SCL_PIN, LL_GPIO_SPEED_FREQ_HIGH);
