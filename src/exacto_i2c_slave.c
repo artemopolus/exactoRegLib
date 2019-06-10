@@ -302,6 +302,47 @@ void getNewDataFromI2C_i2c_dma_slave()
 		//printf("None");
     }
 }
+uint8_t I2C_DMA_RXTX_EV_IRQHandler(void)
+{
+	if(READ_BIT(I2C_DMA_I2C->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR))
+	{
+		switch(Mode_i2c_dma_slave)
+		{
+		case(RECEIVETRANSMIT):
+			if(flagReceiveTransferComplete_i2c_dma_slave||flagTransmitTransferComplete_i2c_dma_slave)
+			{
+				switch((uint32_t)(READ_BIT(I2C_DMA_I2C->SR2, I2C_SR2_TRA)))
+				{
+				case (I2C_SR2_TRA):
+						Transmit_Init_i2c_dma_slave();
+						return 1;
+				case (0x00000000U):
+						Receive_Init_i2c_dma_slave();
+						return 2;
+				}
+			}
+		break;
+		case (TRANSMIT):
+			if ((((uint32_t)(READ_BIT(I2C_DMA_I2C->SR2, I2C_SR2_TRA))) == I2C_SR2_TRA)&&(flagTransmitTransferComplete_i2c_dma_slave))
+			{
+				Transmit_Init_i2c_dma_slave();
+				return 1;
+			}
+		break;
+		}
+	}
+	else if(READ_BIT(I2C_DMA_I2C->SR1, I2C_SR1_STOPF) == (I2C_SR1_STOPF))
+	{
+		//LL_I2C_ClearFlag_STOP(I2C_DMA_SLAVE);
+		__IO uint32_t tmpreg;
+		tmpreg = I2C_DMA_I2C->SR1;
+		(void) tmpreg;
+		SET_BIT(I2C_DMA_I2C->CR1, I2C_CR1_PE);
+		Transfer_Complete_i2c_dma_slave();
+		return 3;
+	}
+	return 0;
+}
 void I2C_DMA_Body_EV_IRQHandler(void)
 {
 	/* Check ADDR flag value in ISR register */
@@ -387,6 +428,7 @@ void Transmit_Init_i2c_dma_slave()
 	(void) tmpreg;
 	tmpreg = I2C_DMA_I2C->SR2;
 	(void) tmpreg;
+	flagTransmitTransferComplete_i2c_dma_slave = 0;
 }
 void Receive_Init_i2c_dma_slave()
 {
@@ -455,6 +497,7 @@ void Receive_Init_i2c_dma_slave()
 	  (void) tmpreg;
 	  tmpreg = I2C_DMA_I2C->SR2;
 	  (void) tmpreg;
+	flagReceiveTransferComplete_i2c_dma_slave = 0;
 }
 void SetData2word2Transmit_i2c_dma_slave(uint8_t *pData)
 {

@@ -25,6 +25,8 @@ void SetData2word2Transmit_i2c_dma_slave(uint8_t *pData);
 void DMA_Body_TX_IRQHandler(void);
 void DMA_Body_RX_IRQHandler(void);
 
+uint8_t I2C_DMA_RXTX_EV_IRQHandler(void);
+
 void I2C_DMA_Body_EV_IRQHandler(void);
 
 void Transmit_Init_i2c_dma_slave(void);
