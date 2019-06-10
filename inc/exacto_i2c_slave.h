@@ -15,15 +15,15 @@ void ConfigureMode_i2c_dma_slave(void);
 void Activate2work_i2c_dma_slave(void);
 void Handle_i2c_dma_slave(void);
 
-void Transfer_Complete_i2c_dma_slave(void);
+uint8_t Transfer_Complete_i2c_dma_slave(void);
 void Transfer_Error_i2c_dma_slave(void);
 void getNewDataFromI2C_i2c_dma_slave(void);
 
 
 void SetData2word2Transmit_i2c_dma_slave(uint8_t *pData);
 
-void DMA_Body_TX_IRQHandler(void);
-void DMA_Body_RX_IRQHandler(void);
+uint8_t DMA_Body_TX_IRQHandler(void);
+uint8_t DMA_Body_RX_IRQHandler(void);
 
 uint8_t I2C_DMA_RXTX_EV_IRQHandler(void);
 

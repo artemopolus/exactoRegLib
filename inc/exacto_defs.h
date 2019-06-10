@@ -5,6 +5,20 @@
 #define ENABLE_SAFE_CP2BUFFER
 #define ENABLE_CRITSEC_CP2BUFFER
 
+#define ECHO_ALL
+//#define PING_MODE
+//#define FAKE_ISM330
+//#define FAKE_BMP280
+//#define FAKE_LSM303
+#define ENABLE_LSM303_XL
+#define ENABLE_LSM303_M
+
+#define ENABLE_I2C_SLAVE
+
+#define EN_TASK_ISM330
+#define EN_TASK_BMP280
+#define EN_TASK_LSM303
+
 #define FLG_LSM303  (INT8U) 0x01
 #define FLG_BMP280  (INT8U) 0x02
 #define FLG_ISM330  (INT8U) 0x04
