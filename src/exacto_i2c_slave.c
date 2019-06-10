@@ -237,13 +237,13 @@ uint8_t DMA_Body_TX_IRQHandler(void)
 	{
 		//LL_DMA_ClearFlag_GI4(I2C_DMA_DMA);
 		WRITE_REG(I2C_DMA_DMA->IFCR, DMA_IFCR_CGIF6);
-		//Transfer_Complete_i2c_dma_slave();
+		Transfer_Complete_i2c_dma_slave();
         return 1;
 	}
 //	else if(LL_DMA_IsActiveFlag_TE4(I2C_DMA_DMA))
 	else if(READ_BIT(I2C_DMA_DMA->ISR, DMA_ISR_TEIF6) == (DMA_ISR_TEIF6))
 	{
-		//Transfer_Error_i2c_dma_slave();
+		Transfer_Error_i2c_dma_slave();
         return 0;
 	}
     return 2;
@@ -256,13 +256,13 @@ uint8_t DMA_Body_RX_IRQHandler(void)
 	{
 		//LL_DMA_ClearFlag_GI5(I2C_DMA_DMA);
 		WRITE_REG(I2C_DMA_DMA->IFCR, DMA_IFCR_CGIF7);
-		//Transfer_Complete_i2c_dma_slave();
+		Transfer_Complete_i2c_dma_slave();
         return 1;
 	}
 //	else if(LL_DMA_IsActiveFlag_TE5(I2C_DMA_DMA))
 	else if (READ_BIT(I2C_DMA_DMA->ISR, DMA_ISR_TEIF7) == (DMA_ISR_TEIF7))
 	{
-		//Transfer_Error_i2c_dma_slave();
+		Transfer_Error_i2c_dma_slave();
         return 0;
 	}
     return 2;
