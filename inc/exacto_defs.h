@@ -12,6 +12,7 @@
 //#define FAKE_LSM303
 #define ENABLE_LSM303_XL
 #define ENABLE_LSM303_M
+#define ENABLE_TIME_MEAS
 
 #define ENABLE_I2C_SLAVE
 

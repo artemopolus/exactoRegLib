@@ -21,6 +21,10 @@ void getNewDataFromI2C_i2c_dma_slave(void);
 
 
 void SetData2word2Transmit_i2c_dma_slave(uint8_t *pData);
+uint8_t SetDT2W2TR_fixlen_i2c_dma_slave(uint8_t * pData, const uint32_t datalen);
+uint32_t GetMXW2TR_i2c_dma_slave(void);
+uint8_t SetValue2W2TR_i2c_dma_slave(const uint8_t value);
+uint32_t GetCurW2TR_i2c_dma_slave(void);
 
 uint8_t DMA_Body_TX_IRQHandler(void);
 uint8_t DMA_Body_RX_IRQHandler(void);
