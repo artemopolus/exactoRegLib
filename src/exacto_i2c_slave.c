@@ -46,7 +46,7 @@ char pTransmitBuffer_i2c_dma_slave[MAXNBWORD2TRANSMIT];
 //uint32_t * pTransmitBufferDMA = (uint32_t*)(&word2transmit[0]);
 uint32_t * ptTransmit_i2c_dma_slave = (uint32_t*)(&pTransmitBuffer_i2c_dma_slave[0]);
 __IO uint32_t  uCountTransmit_i2c_dma_slave  = 0;
-uint8_t       ptReceive_i2c_dma_slave[0x03] = {0};
+uint8_t       ptReceive_i2c_dma_slave[0x04] = {0};
 __IO uint8_t  uCountReceive_i2c_dma_slave   = sizeof(ptReceive_i2c_dma_slave);
 
 __IO uint8_t  flagReceiveTransferComplete_i2c_dma_slave        = 1;
