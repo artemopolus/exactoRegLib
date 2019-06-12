@@ -546,3 +546,8 @@ uint32_t GetCurW2TR_i2c_dma_slave(void)
 {
 	return uCountTransmit_i2c_dma_slave;
 }
+uint8_t GetReceiveBufferValue(const uint8_t index)
+{
+	return ptReceive_i2c_dma_slave[index];
+}
+

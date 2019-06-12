@@ -36,5 +36,7 @@ void I2C_DMA_Body_EV_IRQHandler(void);
 void Transmit_Init_i2c_dma_slave(void);
 void Receive_Init_i2c_dma_slave(void);
 
+uint8_t GetReceiveBufferValue(const uint8_t index);
+
 
 #endif /* EXACTOREGLIB_INC_EXACTO_I2C_SLAVE_H_ */
