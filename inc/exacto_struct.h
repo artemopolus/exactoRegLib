@@ -6,19 +6,22 @@
 typedef struct {
        
   char Name[6];
-    uint8_t Whoami;
-    uint8_t flgSens; 
-		uint8_t initFreq;
-	uint16_t       TDiscr;
+  uint8_t Whoami;
+  uint8_t flgSens; 
+	uint8_t initFreq;
+	uint16_t TDiscr;
+	uint16_t MultSens1;
+	uint16_t MultSens2;
+	uint16_t MultSens3;
 } ExactoSensorSet;
 
 typedef struct{
 	uint8_t pSensor;
-    uint8_t s1_status;
+  uint8_t s1_status;
 	uint8_t s1[6];
-    uint8_t s2_status;
+  uint8_t s2_status;
 	uint8_t s2[6];
-    uint8_t sL_status;
+  uint8_t sL_status;
 	uint8_t sL[14];
 }SensorData;
 

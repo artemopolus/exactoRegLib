@@ -3,8 +3,9 @@
 
 //#define ENABLE_FIFO_BUFFER
 //#define ENABLE_SAFE_CP2BUFFER
-#define ENABLE_CRITSEC_CP2BUFFER
+//#define ENABLE_CRITSEC_CP2BUFFER
 #define TEST_I2C_SENDING
+//#define STD_COPY
 
 #define ECHO_ALL
 //#define PING_MODE

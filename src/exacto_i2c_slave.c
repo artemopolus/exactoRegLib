@@ -35,6 +35,8 @@
 
 #define SLAVE_BYTE_TO_SEND       (uint8_t)0xA5
 
+__IO uint8_t FlagTransmitBlocked = 0;
+
 char Word2transmit_i2c_dma_slave[] = "hello";
 
 #define MAXNBWORD2TRANSMIT  80
@@ -397,13 +399,14 @@ void I2C_DMA_Body_EV_IRQHandler(void)
 		Transfer_Complete_i2c_dma_slave();
 	}
 }
+void Block_TransmitInit_i2c_dma_slave(uint8_t mode)
+{
+	FlagTransmitBlocked = mode;
+}
 
 void Transmit_Init_i2c_dma_slave()
 {
-    #ifdef EXACTO_HAL
-    #endif
-    #ifdef EXACTO_SPL
-    #endif
+	if(!FlagTransmitBlocked) return;
     #ifdef EXACTO_HAL
     //	if(LL_DMA_IsEnabledChannel(I2C_DMA_DMA,I2C_DMA_DMA_RECEIVE)){
 	if(READ_BIT(DMA1_Channel5->CCR, DMA_CCR_EN) == (DMA_CCR_EN))
