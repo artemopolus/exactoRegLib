@@ -18,6 +18,10 @@
 #define ENABLE_LSM303_M
 #define ENABLE_TIME_MEAS
 
+#define ENABLE_ISM330_T
+#define ENABLE_ISM330_XL
+#define ENABLE_ISM330_G
+
 #define ENABLE_I2C_SLAVE
 
 #define EN_TASK_ISM330

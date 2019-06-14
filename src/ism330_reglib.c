@@ -81,37 +81,50 @@ uint8_t Set3wireAndGetWhoami_ism330(void)
 	res = (value == 0x6A) ? 1 : 0;
 	return res;
 }
-uint8_t GetTGXLData_ism330(uint8_t * data)
+uint8_t GetTGData_ism330(uint8_t * data)
 {
-    if((read_ism330(ISM330DLC_STATUS_REG) & 0x05) != 0x05)
-        return 0;
-    multiread_ism330(ISM330DLC_OUT_TEMP_L, data, 8);
-    return 1;
+//    if((read_ism330(ISM330DLC_STATUS_REG) & 0x05) != 0x05)
+//        return 0;
+//    multiread_ism330(ISM330DLC_OUT_TEMP_L, data, 8);
+//    return 1;
+		return multiread_ism330_fst(ISM330DLC_OUT_TEMP_L,data,8);
 }
 uint8_t GetGXLData_ism330(uint8_t * data)
 {
-    if((read_ism330(ISM330DLC_STATUS_REG) & 0x03) != 0x03)
-        return 0;
-    multiread_ism330(ISM330DLC_OUTX_L_G, data, 6);
-    return 1;
+//    if((read_ism330(ISM330DLC_STATUS_REG) & 0x03) != 0x03)
+//        return 0;
+//    multiread_ism330(ISM330DLC_OUTX_L_G, data, 6);
+//    return 1;
+		return multiread_ism330_fst(ISM330DLC_OUTX_L_G,data,6);
 }
 uint8_t GetXLData_ism330(uint8_t * data)
 {
-    if(read_ism330(ISM330DLC_STATUS_REG) & 0x01)
-        return 0;
-    multiread_ism330(ISM330DLC_OUTX_L_XL, data, 3);
-    return 1;
+//    if(read_ism330(ISM330DLC_STATUS_REG) & 0x01)
+//        return 0;
+//    multiread_ism330(ISM330DLC_OUTX_L_XL, data, 3);
+//    return 1;
+		return multiread_ism330_fst(ISM330DLC_OUTX_L_XL,data,6);
 }
 uint8_t GetGData_ism330(uint8_t * data)
 {
-    if(read_ism330(ISM330DLC_STATUS_REG) & 0x02)
-        return 0;
-    multiread_ism330(ISM330DLC_OUTX_L_G, data, 3);
-    return 1;
+//    if(read_ism330(ISM330DLC_STATUS_REG) & 0x02)
+//        return 0;
+//    multiread_ism330(ISM330DLC_OUTX_L_G, data, 3);
+//    return 1;
+		return multiread_ism330_fst(ISM330DLC_OUTX_L_G,data,6);
 }
 uint8_t Get_T_G_XL_uint8_ism330(uint8_t * data)
 {
-	if(!read_ism330(ISM330DLC_STATUS_REG))	return 0;
-	multiread_ism330(ISM330DLC_OUT_TEMP_L, data, 14);
-	return 1;
+//	if(!read_ism330(ISM330DLC_STATUS_REG))	return 0;
+//	multiread_ism330(ISM330DLC_OUT_TEMP_L, data, 14);
+//	return 1;
+	return multiread_ism330_fst(ISM330DLC_OUT_TEMP_L,data,14);
+}
+uint8_t GetTData_ism330(uint8_t * data)
+{
+	return multiread_ism330_fst(ISM330DLC_OUT_TEMP_L,data,2);
+}
+uint8_t GetFlagDRDY_ism330(void)
+{
+	return read_ism330(ISM330DLC_STATUS_REG);
 }

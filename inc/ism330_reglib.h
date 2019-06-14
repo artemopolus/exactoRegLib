@@ -17,10 +17,13 @@
 void ConfigureSPI3_ism330(void);
 void ActivateSPI3_ism330(void);
 uint8_t Set3wireAndGetWhoami_ism330(void);
-uint8_t GetTGXLData_ism330(uint8_t * data);
+uint8_t GetTGData_ism330(uint8_t * data);
 uint8_t GetGXLData_ism330(uint8_t * data);
 uint8_t GetXLData_ism330(uint8_t * data);
 uint8_t GetGData_ism330(uint8_t * data);
+uint8_t GetTData_ism330(uint8_t * data);
+
+uint8_t GetFlagDRDY_ism330(void);
 
 uint8_t Get_T_G_XL_uint8_ism330(uint8_t * data);
 
