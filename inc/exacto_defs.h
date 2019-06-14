@@ -5,7 +5,7 @@
 //#define ENABLE_SAFE_CP2BUFFER
 //#define ENABLE_CRITSEC_CP2BUFFER
 #define TEST_I2C_SENDING
-//#define STD_COPY
+#define USART_SEND_MSG
 
 #define ECHO_ALL
 //#define PING_MODE
@@ -25,6 +25,9 @@
 #define FLG_LSM303  (INT8U) 0x01
 #define FLG_BMP280  (INT8U) 0x02
 #define FLG_ISM330  (INT8U) 0x04
+#define FLG_UART		(INT8U) 0x10
+#define FLG_I2C			(INT8U) 0x20
+#define FLG_TEST		(INT8U)	0x80
 
 #define OS_TIME_10mS 	(INT16U)((INT32U)OS_TICKS_PER_SEC * 10L / 1000L)       //100Hz
 #define OS_TIME_09m6S (INT16U) 96
