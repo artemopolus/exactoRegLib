@@ -56,17 +56,33 @@ typedef enum{
 #define	EXACTO_FREQ_1HZ 	 0x00U
 
 
-#define EXACTOLBIDATASIZE		512
+
 #define EXACTOLSM303SZ		512
-#define EXACTOBMP280SZ		512
+#define EXACTOBMP280SZ		200
 #define EXACTOISM330SZ		512
+
+#define EXACTOLSM303SZ_XL		400
+#define EXACTOLSM303SZ_M		100
+
+#define EXACTOISM330SZ_T		100
+#define EXACTOISM330SZ_G		400
+#define EXACTOISM330SZ_XL		400
+
+#define EXACTOLBIDATASIZE		(EXACTOLSM303SZ_XL + EXACTOLSM303SZ_M + EXACTOBMP280SZ + EXACTOISM330SZ_T + EXACTOISM330SZ_G + EXACTOISM330SZ_XL)
+#define EXACTOLBIARRAYCNT	9
 typedef struct{
-    uint8_t lsm303[EXACTOLSM303SZ];
-    uint8_t bmp280[EXACTOBMP280SZ];
-    uint8_t ism330[EXACTOISM330SZ];
-    uint32_t cnt_lsm303;
-    uint32_t cnt_bmp280;
-    uint32_t cnt_ism330;
+    uint8_t lsm303_xl	[EXACTOLSM303SZ_XL];
+		uint8_t lsm303_m	[EXACTOLSM303SZ_M];
+    uint8_t bmp280		[EXACTOBMP280SZ];
+    uint8_t ism330_t	[EXACTOISM330SZ_T];
+		uint8_t ism330_g	[EXACTOISM330SZ_G];
+		uint8_t ism330_xl	[EXACTOISM330SZ_XL];
+    uint16_t cnt_lsm303_xl;
+		uint8_t cnt_lsm303_m;
+    uint8_t cnt_bmp280;
+    uint8_t cnt_ism330_t;
+		uint16_t cnt_ism330_g;
+		uint16_t cnt_ism330_xl;
 }ExactoLBIdata;
 
 #endif
