@@ -10,9 +10,9 @@ typedef struct {
   uint8_t flgSens; 
 	uint8_t initFreq;
 	uint16_t TDiscr;
-	uint16_t MultSens1;
-	uint16_t MultSens2;
-	uint16_t MultSens3;
+	uint8_t MultSens1;
+	uint8_t MultSens2;
+	uint8_t MultSens3;
 } ExactoSensorSet;
 
 typedef struct{
