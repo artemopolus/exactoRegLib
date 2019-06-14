@@ -4,8 +4,10 @@
 //#define ENABLE_FIFO_BUFFER
 //#define ENABLE_SAFE_CP2BUFFER
 #define ENABLE_CRITSEC_CP2BUFFER
-#define TEST_I2C_SENDING
-#define USART_SEND_MSG
+#define ENABLE_TEST_MSG
+#define I2C_SEND_MSG
+#define UART_SEND_MSG
+
 
 #define ECHO_ALL
 //#define PING_MODE
