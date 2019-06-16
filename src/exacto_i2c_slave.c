@@ -571,12 +571,13 @@ void SetData2word2Transmit_i2c_dma_slave(uint8_t *pData)
 }
 uint8_t SetDT2W2TR_fixlen_i2c_dma_slave(uint8_t * pData, const uint32_t datalen)
 {
-	if(MAXNBWORD2TRANSMIT < datalen)	return 0;
-	for(uint32_t i = 0; i < datalen; i ++)
+	uint32_t count = datalen;
+	if(MAXNBWORD2TRANSMIT < count)	count = MAXNBWORD2TRANSMIT;
+	for(uint32_t i = 0; i < count; i ++)
 	{
 		pTransmitBuffer_i2c_dma_slave[i] = pData[i];
 	}
-	uCountTransmit_i2c_dma_slave = datalen;
+	uCountTransmit_i2c_dma_slave = count;
 	return 1;
 }
 uint32_t GetMXW2TR_i2c_dma_slave(void)
