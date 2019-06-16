@@ -355,6 +355,46 @@ uint8_t I2C_DMA_RXTX_EV_IRQHandler(void)
 	}
 	return 0;
 }
+uint8_t I2C_DMA_Body_ER_IRQHandler(void)
+{
+//	__STATIC_INLINE uint32_t LL_I2C_IsActiveFlag_AF(I2C_TypeDef *I2Cx)
+//{
+//  return (READ_BIT(I2Cx->SR1, I2C_SR1_AF) == (I2C_SR1_AF));
+//}
+  /* Normal use case, if all bytes are sent and Acknowledge failure appears */
+  /* This correspond to the end of communication */
+//  if((ubSlaveNbDataToTransmit == 0) && \
+//     (LL_I2C_IsActiveFlag_AF(I2C1)) && \
+//     (LL_I2C_GetTransferDirection(I2C1) == LL_I2C_DIRECTION_WRITE))
+//  {
+//    /* Clear AF flag value in ISR register */
+//    LL_I2C_ClearFlag_AF(I2C1);
+
+//    /* Call function Slave Complete Callback */
+//    Slave_Complete_Callback();
+//  }
+//  else
+//  {
+//    /* Call Error function */
+//    Error_Callback();
+//  }
+//__STATIC_INLINE void LL_I2C_ClearFlag_AF(I2C_TypeDef *I2Cx)
+//{
+//  CLEAR_BIT(I2Cx->SR1, I2C_SR1_AF);
+//}
+//#define LL_I2C_DIRECTION_WRITE              I2C_SR2_TRA
+	if((READ_BIT(I2C_DMA_I2C->SR1, I2C_SR1_AF) == (I2C_SR1_AF))&&	\
+		((uint32_t)(READ_BIT(I2C_DMA_I2C->SR2, I2C_SR2_TRA)) == I2C_SR2_TRA))
+	{
+		CLEAR_BIT(I2C_DMA_I2C->SR1, I2C_SR1_AF);
+		//acknoledgment
+		//MODIFY_REG(I2C_DMA_I2C->CR1, I2C_CR1_ACK, I2C_CR1_ACK);
+		return 1;
+	}
+	else{
+		return 0;
+	}
+}
 void I2C_DMA_Body_EV_IRQHandler(void)
 {
 	/* Check ADDR flag value in ISR register */
@@ -425,11 +465,16 @@ void Transmit_Init_i2c_dma_slave()
     #ifdef EXACTO_SPL
 	if(READ_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN) == (DMA_CCR1_EN))
 	{
-		CLEAR_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN);
-        ptTransmit_i2c_dma_slave = (uint32_t*)(&pTransmitBuffer_i2c_dma_slave);
-		MODIFY_REG(I2C_DMA_DMA_CHANNEL_TX->CNDTR,  DMA_CNDTR1_NDT, uCountTransmit_i2c_dma_slave);
-		SET_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_EN);
+		CLEAR_BIT(I2C_DMA_DMA_CHANNEL_RX->CCR, DMA_CCR1_EN);  
+	}else if (READ_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_EN) == (DMA_CCR1_EN))
+	{
+		CLEAR_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_EN);
 	}
+	else return;
+	ptTransmit_i2c_dma_slave = (uint32_t*)(&pTransmitBuffer_i2c_dma_slave);
+	MODIFY_REG(I2C_DMA_DMA_CHANNEL_TX->CNDTR,  DMA_CNDTR1_NDT, uCountTransmit_i2c_dma_slave);
+	SET_BIT(I2C_DMA_DMA_CHANNEL_TX->CCR, DMA_CCR1_EN);
+	
     #endif
 	
 	Status_i2c_dma_slave = WRITE;

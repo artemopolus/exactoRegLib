@@ -32,6 +32,7 @@ uint8_t DMA_Body_RX_IRQHandler(void);
 uint8_t I2C_DMA_RXTX_EV_IRQHandler(void);
 
 void I2C_DMA_Body_EV_IRQHandler(void);
+uint8_t I2C_DMA_Body_ER_IRQHandler(void);
 
 void Block_TransmitInit_i2c_dma_slave(uint8_t mode);
 

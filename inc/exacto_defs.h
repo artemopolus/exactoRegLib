@@ -5,7 +5,7 @@
 //#define ENABLE_SAFE_CP2BUFFER
 #define ENABLE_CRITSEC_CP2BUFFER
 #define ENABLE_TEST_MSG
-#define I2C_SEND_MSG
+//#define I2C_SEND_MSG
 #define UART_SEND_MSG
 
 
@@ -14,8 +14,12 @@
 //#define FAKE_ISM330
 //#define FAKE_BMP280
 //#define FAKE_LSM303
+
 #define ENABLE_LSM303_XL
 #define ENABLE_LSM303_M
+#define ENABLE_LSM303_SEND
+#define ENABLE_LSM303_SAVE
+
 #define ENABLE_TIME_MEAS
 
 #define ENABLE_ISM330_T
@@ -23,6 +27,7 @@
 #define ENABLE_ISM330_G
 
 #define ENABLE_I2C_SLAVE
+//#define ENABLE_I2C_PENDING
 
 #define EN_TASK_ISM330
 #define EN_TASK_BMP280
