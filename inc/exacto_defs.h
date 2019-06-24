@@ -40,6 +40,7 @@
 #define FLG_I2C			(INT8U) 0x20
 #define FLG_TEST		(INT8U)	0x80
 
+#define OS_TIME_1m2S   (INT16U) 12
 #define OS_TIME_10mS 	(INT16U)((INT32U)OS_TICKS_PER_SEC * 10L / 1000L)       //100Hz
 #define OS_TIME_09m6S (INT16U) 96
 #define OS_TIME_100mS (INT16U)((INT32U)OS_TICKS_PER_SEC * 100L / 1000L)     //10 Hz

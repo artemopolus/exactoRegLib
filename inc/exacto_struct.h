@@ -36,7 +36,8 @@ typedef enum{
     SENDFREQ_ES32A = 1,
     SET_LSM303 = 2,
     SET_BMP280 = 3,
-    SET_ISM330 = 4
+    SET_ISM330 = 4,
+    SET_SNSFRQ_MODE = 5
 } ExactoStm32Adr;
 
 typedef enum{

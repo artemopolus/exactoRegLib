@@ -9,6 +9,7 @@
 #define EXACTOREGLIB_INC_EXACTO_I2C_SLAVE_H_
 
 #include "exactoBase_driver.h"
+#include "exacto_struct.h"
 
 void ConfigurePins_i2c_dma_slave(void);
 void ConfigureMode_i2c_dma_slave(void);
