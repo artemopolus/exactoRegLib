@@ -39,7 +39,7 @@ __IO uint8_t FlagTransmitBlocked = 0;
 
 char Word2transmit_i2c_dma_slave[] = "hello";
 
-#define MAXNBWORD2TRANSMIT  (EXACTOLBIDATASIZE + 4 + EXACTOLBIARRAYCNT)
+
 char pTransmitBuffer_i2c_dma_slave[MAXNBWORD2TRANSMIT];
 //__IO uint8_t nbWord2Transmit = 0;
 
