@@ -56,7 +56,7 @@ typedef enum{
 #define	EXACTO_FREQ_10HZ 	 0x01U
 #define	EXACTO_FREQ_1HZ 	 0x00U
 
-#define EXACTOLBIMAXTRY 10
+#define EXACTOLBIMAXTRY 100
 
 #define EXACTOLSM303SZ		500
 
