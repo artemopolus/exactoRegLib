@@ -3,6 +3,8 @@
 
 #include <stdint.h> 
 
+
+
 typedef struct {
        
   char Name[6];
@@ -85,6 +87,7 @@ typedef enum{
 
 #define MAXNBWORD2TRANSMIT  380
 
+
 typedef struct{
     uint8_t lsm303_xl	[EXACTOLSM303SZ_XL];
 	uint8_t lsm303_m	[EXACTOLSM303SZ_M];
@@ -99,5 +102,53 @@ typedef struct{
 	uint16_t    cnt_ism330_g;
 	uint16_t    cnt_ism330_xl;
 }ExactoLBIdata;
+
+
+static inline uint8_t ExactoSensorSet2array( ExactoSensorSet * src, uint8_t * dst)
+{
+	uint8_t index = 0;
+	dst[index++] = src->Whoami;
+	dst[index++] = src->flgSens;
+	dst[index++] = src->initFreq;
+	dst[index++] = src->MultSens1;
+	dst[index++] = src->MultSens2;
+	dst[index++] = src->MultSens3;
+	dst[index++] = (uint8_t)src->TDiscr << 8;
+	dst[index++] = (uint8_t)src->TDiscr;
+	return index;
+}
+static inline uint32_t ExactoStm32setConfig2buffer(uint8_t * dst, const uint32_t len,const uint16_t BaseDelay,
+    ExactoSensorSet * lsm303, ExactoSensorSet * bmp280,ExactoSensorSet * ism330)
+{
+	uint32_t index = 0;
+	uint8_t devnum = 1;
+	dst[index++] = devnum++;
+	dst[index++] = (uint8_t)BaseDelay << 8;
+	dst[index++] = (uint8_t)BaseDelay;
+	dst[index++] = devnum++;
+	dst[index++] = (uint8_t)(MAXNBWORD2TRANSMIT << 8);
+	dst[index++] = (uint8_t) MAXNBWORD2TRANSMIT;
+	dst[index++] = devnum++;
+	index = ExactoSensorSet2array(lsm303, &dst[index]);
+	dst[index++] = devnum++;
+	dst[index++] = (uint8_t)(EXACTOLSM303SZ_XL << 8);
+	dst[index++] = (uint8_t)(EXACTOLSM303SZ_XL);
+	dst[index++] = (uint8_t)(EXACTOLSM303SZ_M << 8);
+	dst[index++] = (uint8_t)(EXACTOLSM303SZ_M);
+	dst[index++] = devnum++;
+	index = ExactoSensorSet2array(bmp280, &dst[index]);
+	dst[index++] = devnum++;
+	dst[index++] = (uint8_t) EXACTOBMP280SZ;
+	dst[index++] = devnum++;
+	index = ExactoSensorSet2array(ism330, &dst[index]);
+	dst[index++] = devnum++;
+	dst[index++] = (uint8_t) (EXACTOISM330SZ_G << 8);
+	dst[index++] = (uint8_t) EXACTOISM330SZ_G;
+	dst[index++] = (uint8_t) (EXACTOISM330SZ_XL << 8);
+	dst[index++] = (uint8_t) EXACTOISM330SZ_XL;
+	dst[index++] = devnum ++;
+	dst[index++] = (uint8_t) EXACTOLBIARRAYCNT;
+	return index;
+}
 
 #endif
