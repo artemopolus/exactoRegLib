@@ -120,7 +120,7 @@ static inline uint8_t ExactoSensorSet2array( ExactoSensorSet * src, uint8_t * ds
 static inline uint32_t ExactoStm32setConfig2buffer(uint8_t * dst, const uint32_t len,const uint16_t BaseDelay,
     ExactoSensorSet * lsm303, ExactoSensorSet * bmp280,ExactoSensorSet * ism330)
 {
-	uint32_t index = 0;
+	uint32_t index = 4;
 	uint8_t devnum = 1;
 	dst[index++] = devnum++;
 	dst[index++] = (uint8_t)BaseDelay << 8;
