@@ -66,9 +66,9 @@ void ConfigureMode_i2c_dma_slave(void)
 	SET_BIT(RCC->AHBENR, RCC_AHBENR_DMA1EN);
 
 	/* (2) Configure NVIC for DMA transfer complete/error interrupts */
-	NVIC_SetPriority(I2C_DMA_DMA_RECEIVE_IRQn, 0); /* another var: 0x04 */
+	NVIC_SetPriority(I2C_DMA_DMA_RECEIVE_IRQn, 0x04); /* another var: 0x04 */
 	NVIC_EnableIRQ(I2C_DMA_DMA_RECEIVE_IRQn);
-	NVIC_SetPriority(I2C_DMA_DMA_TRANSMIT_IRQn, 0); /* 0x01 */
+	NVIC_SetPriority(I2C_DMA_DMA_TRANSMIT_IRQn, 0x01); /* 0x01 */
 	NVIC_EnableIRQ(I2C_DMA_DMA_TRANSMIT_IRQn);
 
 
@@ -316,6 +316,29 @@ void getNewDataFromI2C_i2c_dma_slave()
 }
 uint8_t I2C_DMA_RXTX_EV_IRQHandler(void)
 {
+    if(READ_BIT(I2C_DMA_I2C->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR))
+	{
+        if(flagReceiveTransferComplete_i2c_dma_slave&&flagTransmitTransferComplete_i2c_dma_slave)
+        {
+            switch((uint32_t)(READ_BIT(I2C_DMA_I2C->SR2, I2C_SR2_TRA)))
+            {
+            case (I2C_SR2_TRA):
+                    Transmit_Init_i2c_dma_slave();
+                    return 1;
+            case (0x00000000U):
+                    Receive_Init_i2c_dma_slave();
+                    return 2;
+            }
+        }
+        //L_I2C_ClearFlag_ADDR(I2C_TypeDef *I2Cx)
+      __IO uint32_t tmpreg;
+      tmpreg = I2C_DMA_I2C->SR1;
+      (void) tmpreg;
+      tmpreg = I2C_DMA_I2C->SR2;
+      (void) tmpreg;
+    }
+    return 0;
+    #ifdef DELETE
 	if(READ_BIT(I2C_DMA_I2C->SR1, I2C_SR1_ADDR) == (I2C_SR1_ADDR))
 	{
 		switch(Mode_i2c_dma_slave)
@@ -354,6 +377,7 @@ uint8_t I2C_DMA_RXTX_EV_IRQHandler(void)
 		return 3;
 	}
 	return 0;
+    #endif
 }
 uint8_t I2C_DMA_Body_ER_IRQHandler(void)
 {
