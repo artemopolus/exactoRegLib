@@ -192,9 +192,9 @@ void ConfigureMode_i2c_dma_slave(void)
 	MODIFY_REG(GPIOB->CRL, GPIO_CRL_CNF7_0,GPIO_CRL_CNF7_0);
 	MODIFY_REG(GPIOB->ODR, GPIO_ODR_ODR7, GPIO_ODR_ODR7);
 	/* Configure interrupt */
-	NVIC_SetPriority(I2C_DMA_I2C_EV_IRQn, 0);
+	NVIC_SetPriority(I2C_DMA_I2C_EV_IRQn, 0x00);
 	NVIC_EnableIRQ(I2C_DMA_I2C_EV_IRQn);
-	NVIC_SetPriority(I2C_DMA_I2C_ER_IRQn, 0);
+	NVIC_SetPriority(I2C_DMA_I2C_ER_IRQn, 0x00);
 	NVIC_EnableIRQ(I2C_DMA_I2C_ER_IRQn);
 	/* (3) Configure I2C1 functional parameters ********************************/
 	//LL_I2C_Disable(I2C_DMA_SLAVE);
@@ -470,7 +470,7 @@ void Block_TransmitInit_i2c_dma_slave(uint8_t mode)
 
 void Transmit_Init_i2c_dma_slave()
 {
-	if(!FlagTransmitBlocked) return;
+	//if(!FlagTransmitBlocked) return;
     #ifdef EXACTO_HAL
     //	if(LL_DMA_IsEnabledChannel(I2C_DMA_DMA,I2C_DMA_DMA_RECEIVE)){
 	if(READ_BIT(DMA1_Channel5->CCR, DMA_CCR_EN) == (DMA_CCR_EN))
