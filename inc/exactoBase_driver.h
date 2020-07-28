@@ -10,8 +10,8 @@
 
 //base include
 
-#define EXACTO_HAL
-//#define EXACTO_SPL
+//#define EXACTO_HAL
+#define EXACTO_SPL
 #ifdef EXACTO_HAL
 #include "stm32f103xb.h"
 #endif
