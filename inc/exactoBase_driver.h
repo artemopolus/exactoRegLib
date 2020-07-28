@@ -1,7 +1,7 @@
 /*
  * base.h
  *
- *  Created on: 18 апр. 2019 г.
+ *  Created on: 18 пїЅпїЅпїЅ. 2019 пїЅ.
  *      Author: Temka
  */
 
@@ -10,8 +10,8 @@
 
 //base include
 
-//#define EXACTO_HAL
-#define EXACTO_SPL
+#define EXACTO_HAL
+//#define EXACTO_SPL
 #ifdef EXACTO_HAL
 #include "stm32f103xb.h"
 #endif
@@ -20,6 +20,10 @@
 #include "stm32f10x.h"
 #endif
 
+#ifdef EXACTO_HAL
+#define HSI_VALUE    ((uint32_t)8000000)
+#define HSE_VALUE    ((uint32_t)8000000)
+#endif
 
 //MACROS from HAL
 
