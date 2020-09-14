@@ -2,8 +2,6 @@
 #define EXACTO_BUFFER_H_
 
 #include <stdint.h> 
-
-
 #include <stdlib.h>
 
 
@@ -29,6 +27,12 @@ typedef enum{
 
 #define __static_inline static inline
     
+/**
+ * @brief      { инициализируем буффер для заданного указателя }
+ *
+ * @param      buffer  указатель
+ * @param[in]  sz      размер буффера
+ */
 __static_inline void    setini_exbu8(ExactoBufferUint8Type * buffer, ExactoBufferUint8TypSizes sz)
 {
     buffer->str = 0;
@@ -39,6 +43,13 @@ __static_inline void    setini_exbu8(ExactoBufferUint8Type * buffer, ExactoBuffe
     buffer->datalen = sz;
     buffer->mask = sz - 1;
 }
+/**
+ * @brief      { получаем размер буффера заданного указателя }
+ *
+ * @param      buffer  указатель на буффер
+ *
+ * @return     размер буфферв
+ */
 __static_inline uint8_t getlen_exbu8(ExactoBufferUint8Type * buffer)
 {
     if( buffer->lst >= buffer->str)
@@ -46,6 +57,14 @@ __static_inline uint8_t getlen_exbu8(ExactoBufferUint8Type * buffer)
     else
         return (buffer->lst + buffer->datalen - buffer->str);
 }
+/**
+ * @brief      { забираем значение из начала буффера }
+ *
+ * @param      buffer  указатель на буффер
+ * @param      fstval  переменная для записи первого значения
+ *
+ * @return     успешность операции
+ */
 __static_inline uint8_t grbfst_exbu8(ExactoBufferUint8Type * buffer, uint8_t * fstval)
 {
     if(!buffer->isExist || buffer->isEmpty)     return 0;
@@ -54,6 +73,12 @@ __static_inline uint8_t grbfst_exbu8(ExactoBufferUint8Type * buffer, uint8_t * f
     buffer->str = (buffer->str + 1) & buffer->mask;
     return 1;
 }
+/**
+ * @brief      { вставляем значение в конец буффера }
+ *
+ * @param      buffer  указатель на буффер
+ * @param[in]  value   переменная, которая вставляется в буффер
+ */
 __static_inline void pshfrc_exbu8(ExactoBufferUint8Type * buffer,const uint8_t value)
 {
     if(!buffer->isExist)     return;
@@ -65,6 +90,14 @@ __static_inline void pshfrc_exbu8(ExactoBufferUint8Type * buffer,const uint8_t v
 			if(buffer->lst == buffer->str) buffer->str = (buffer->str + 1) & buffer->mask;
 		}
 }
+/**
+ * @brief      { забираем данные из буффера в массив }
+ *
+ * @param      buffer  указатель на буффер источника данных
+ * @param      dst     указатель на целевой массив
+ *
+ * @return     успешна ли операция
+ */
 __static_inline uint8_t grball_exbu8(ExactoBufferUint8Type * buffer, uint8_t * dst)
 {
     if(!buffer->isExist || buffer->isEmpty)     return 0;
@@ -78,6 +111,13 @@ __static_inline uint8_t grball_exbu8(ExactoBufferUint8Type * buffer, uint8_t * d
 		while(adr != buffer->lst);
     return 1;
 }
+/**
+ * @brief      { убираем значение из начала буффера }
+ *
+ * @param      buffer  указатель на буффер
+ *
+ * @return     успешна ли операция
+ */
 __static_inline uint8_t clrval_exbu8(ExactoBufferUint8Type * buffer)
 {
     if(!buffer->isExist || buffer->isEmpty)     return 0;
@@ -85,6 +125,14 @@ __static_inline uint8_t clrval_exbu8(ExactoBufferUint8Type * buffer)
     buffer->str = (buffer->str + 1) & buffer->mask;
     return 1;
 }
+/**
+ * @brief      { убираем несколько значений из начала буффера, в случае, если данных в буффере меньше, удаляются только они }
+ *
+ * @param      buffer  указатель на буффер
+ * @param[in]  cnt     количество данных для удаления
+ *
+ * @return     успешна ли операция
+ */
 __static_inline uint8_t clrsvr_exbu8(ExactoBufferUint8Type * buffer, const uint8_t cnt)
 {
     if(!buffer->isExist || buffer->isEmpty)     return 0;
@@ -95,87 +143,14 @@ __static_inline uint8_t clrsvr_exbu8(ExactoBufferUint8Type * buffer, const uint8
     }
     return 1;
 }
-__static_inline uint8_t getval_exbu8(ExactoBufferUint8Type * buffer, uint8_t index, uint8_t * value)
-{
-    if(!buffer->isExist || buffer->isEmpty)
-        return 0;
-    if(!getlen_exbu8(buffer))
-        return 0;
-    if(     
-            ((buffer->str <= index)&&(index <= buffer->lst)) || 
-            ((buffer->str <= index)&&(index <= buffer->datalen)) ||
-            (index <= buffer->lst)
-//            ((0 <= index)&&(index <= buffer->lst)) because of unsigned
-      )
-    {
-        *value = buffer->data[index];
-        return 1;
-    }
-    else
-        return 0;
-    
-}
-__static_inline uint8_t    getmas_exbu8(ExactoBufferUint8Type * buffer, uint8_t * dst)
-{
-    if (!buffer->isExist || buffer->isEmpty)
-        return 0;
-    if( buffer->lst > buffer->str)
-    {
-        for(uint8_t i = buffer->str; i <= buffer->lst; i++)
-            dst[i - buffer->str] = buffer->data[i];
-    }
-    else
-    {
-        for(uint8_t i = buffer->str; i < buffer->datalen; i++)
-            dst[i - buffer->str] = buffer->data[i];
-        for(uint8_t i = 0; i <= buffer->str; i++)
-            dst[i + buffer->datalen - buffer->str] = buffer->data[i];
-    }
-    return 1;
-}
-__static_inline uint8_t setval_exbu8 (ExactoBufferUint8Type * buffer, uint8_t value)
-{
-    if (!buffer->isExist)
-        return 0;
-    if(buffer->str == buffer->lst)
-    {
-        if(buffer->isEmpty)
-        {
-            buffer->data[buffer->lst] = value;
-            buffer->isEmpty = 0;
-        }
-        else
-        {
-            if(buffer->lst == (buffer->datalen - 1))
-                buffer->lst = 0;
-            else
-                buffer->lst++;
-            buffer->data[buffer->lst] = value;
-        }
-    }
-    else
-    {
-        if(buffer->lst == (buffer->datalen - 1) )
-        {
-            if (buffer->str == 0)
-            {
-                buffer->str++;
-            }
-            buffer->lst = 0;
-            buffer->data[buffer->lst] = value;
-        }
-        else
-        {
-            if(buffer->lst == (buffer->str - 1) )
-            {
-                buffer->str++;
-            }
-            buffer->lst++;
-            buffer->data[buffer->lst] = value;
-        }
-    }
-    return 1;
-}
+
+/**
+ * @brief      { очищаем буффер }
+ *
+ * @param      указатель на буффер
+ *
+ * @return     успешна ли операция
+ */
 __static_inline uint8_t setemp_exbu8 (ExactoBufferUint8Type * buffer)
 {
     if (!buffer->isExist)
@@ -187,72 +162,5 @@ __static_inline uint8_t setemp_exbu8 (ExactoBufferUint8Type * buffer)
     buffer->isEmpty = 1;
     return 1;
 }
-__static_inline uint8_t setclr_exbu8 (ExactoBufferUint8Type * buffer, uint8_t len)
-{
-    if (!buffer->isExist || buffer->isEmpty)
-        return 0;
-    if  (len >= buffer->datalen)
-        return 0;
-    if  (buffer->lst >= buffer->str)
-    {
-        if ((buffer->lst - buffer->str) <= len)
-        {
-            buffer->lst = 0;
-            buffer->str = 0;
-            buffer->isEmpty = 1;
-        }
-        else
-        {
-            buffer->str += len;
-        }
-    }
-    else
-    {
-        if ((buffer->lst +(buffer->datalen - buffer->str)) <= len)
-        {
-            buffer->lst = 0;
-            buffer->str = 0;
-            buffer->isEmpty = 1;
-        }
-        else
-        {
-            if ((buffer->str + len) < buffer->datalen)
-                buffer->str = buffer->datalen - buffer->str;
-            else
-                buffer->str += len;
-        }
-    }
-    return 1;
-}
-
-// size 2 4 8 16 32 64 128
-#define FIFO( size )\
-  struct {\
-    unsigned char buf[size];\
-    unsigned char tail;\
-    unsigned char head;\
-  } 
-
-#define FIFO_COUNT(fifo)     (fifo.head-fifo.tail)
-#define FIFO_SIZE(fifo)      ( sizeof(fifo.buf)/sizeof(fifo.buf[0]) )
-#define FIFO_IS_FULL(fifo)   (FIFO_COUNT(fifo)==FIFO_SIZE(fifo))
-#define FIFO_IS_EMPTY(fifo)  (fifo.tail==fifo.head)
-#define FIFO_SPACE(fifo)     (FIFO_SIZE(fifo)-FIFO_COUNT(fifo))
-#define FIFO_PUSH(fifo, byte) \
-  {\
-    fifo.buf[fifo.head &amp; (FIFO_SIZE(fifo)-1)]=byte;\
-    fifo.head++;\
-  }
-#define FIFO_FRONT(fifo) (fifo.buf[fifo.tail &amp; (FIFO_SIZE(fifo)-1)])
-#define FIFO_POP(fifo)   \
-  {\
-      fifo.tail++; \
-  }
-#define FIFO_FLUSH(fifo)   \
-  {\
-    fifo.tail=0;\
-    fifo.head=0;\
-  } 
- 
 
 #endif /* EXACTO_BUFFER_H_ */
